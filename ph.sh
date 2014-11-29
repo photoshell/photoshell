@@ -5,11 +5,17 @@ do
     LIBRARY=$line
 done < ~/.ph.sh
 
+mkdir -p ${LIBRARY}/raw
+mkdir -p ${LIBRARY}/thumbnail
+
 while getopts ":i:" opt; do
     case $opt in
         i)
             for LINE in $(find $OPTARG -name '*.CR2') ; do
-                cp ${LINE} ${LIBRARY}/$(cut -d ' ' -f1 <(sha1sum ${LINE})).CR2
+                HASH=$(cut -d ' ' -f1 <(sha1sum ${LINE}))
+                NEWFILE=${LIBRARY}/raw/${HASH}.CR2
+                cp ${LINE} ${NEWFILE}
+                dcraw -c -e ${NEWFILE} > ${LIBRARY}/thumbnail/${HASH}.JPG
             done
             ;;
         \?)
