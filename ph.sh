@@ -1,10 +1,15 @@
 #!/bin/bash
 
+while read line
+do
+    LIBRARY=$line
+done < ~/.ph.sh
+
 while getopts ":i:" opt; do
     case $opt in
         i)
             for LINE in $(find $OPTARG -name '*.CR2') ; do
-                cut -d ' ' -f1 <(sha1sum ${LINE})
+                cp ${LINE} ${LIBRARY}/$(cut -d ' ' -f1 <(sha1sum ${LINE})).CR2
             done
             ;;
         \?)
