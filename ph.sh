@@ -3,7 +3,9 @@
 while getopts ":i:" opt; do
     case $opt in
         i)
-            echo "Importing $OPTARG"
+            for LINE in $(find $OPTARG -name '*.CR2') ; do
+                cut -d ' ' -f1 <(sha1sum ${LINE})
+            done
             ;;
         \?)
             echo "ERROR: -$OPTARG is an invalid option." >&2
