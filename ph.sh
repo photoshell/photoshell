@@ -7,6 +7,7 @@ done < ~/.ph.sh
 
 mkdir -p ${LIBRARY}/raw
 mkdir -p ${LIBRARY}/thumbnail
+mkdir -p ${LIBRARY}/tiff
 
 while getopts ":i:" opt; do
     case $opt in
