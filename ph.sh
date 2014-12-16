@@ -15,7 +15,7 @@ while getopts ":i:" opt; do
             for LINE in $(find $OPTARG -name '*.CR2') ; do
                 HASH=$(cut -d ' ' -f1 <(sha1sum ${LINE}))
                 NEWFILE=${LIBRARY}/raw/${HASH}.CR2
-                cp ${LINE} ${NEWFILE}
+                [ -f ${NEWFILE} ] || cp ${LINE} ${NEWFILE}
                 dcraw -c -e ${NEWFILE} > ${LIBRARY}/thumbnail/${HASH}.JPG
             done
             ;;
