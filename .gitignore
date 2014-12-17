@@ -1,1 +1,5 @@
+dist
+*.egg*
+__pycache__
+.tox
 venv
