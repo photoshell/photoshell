@@ -14,8 +14,16 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Once your virtualenv is activated and setup, you can run `photoshell` by doing
-`python -m photoshell` from the root directory of the project.
+You will also need to create a config file for `photoshell`. A basic example
+just defines where the `photoshell` library will live.
+
+```
+echo 'library: /home/cameron/Pictures/photoshell_library' > ~/.photoshell.yaml
+```
+
+Once your virtualenv is setup and activated, and you have a config file, you
+can run `photoshell` by doing `python -m photoshell` from the root directory
+of the project.
 
 ## Legacy Usage
 
