@@ -1,10 +1,28 @@
-# ph.sh
+# ph.sh (photoshell)
 
-Shell scripts for managing photos
+Utilities for Managing Photos
 
 ## Usage
 
-ph.sh will copy all CR2 files from a directory into a library directory, separating out JPEG previews.
+Before you run `photoshell` you need to be in a virtualenv and install any
+dependencies. The following example will create and activate a virtualenv,
+then install dependencies from requirements.txt.
+
+```
+virtualenv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+Once your virtualenv is activated and setup, you can run `photoshell` by doing
+`python -m photoshell` from the root directory of the project.
+
+## Legacy Usage
+
+Legacy files are located in the `legacy` folder.
+
+ph.sh will copy all CR2 files from a directory into a library directory,
+separating out JPEG previews.
 
 ```
 echo '/my/library/directory' > ~/.ph.sh
