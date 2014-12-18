@@ -3,6 +3,10 @@ from PIL import Image
 
 
 def render(file_name):
+    # Use Dark Theme
+    settings = Gtk.Settings.get_default()
+    settings.set_property('gtk-application-prefer-dark-theme', True)
+
     # Load Image
     loader = GdkPixbuf.PixbufLoader.new()
     loader.write(open(file_name, 'rb').read())
@@ -13,7 +17,8 @@ def render(file_name):
     width, height = image.size
 
     # Create Pixbuf
-    pixbuf = loader.get_pixbuf().scale_simple(width, height, GdkPixbuf.InterpType.BILINEAR)
+    pixbuf = loader.get_pixbuf().scale_simple(
+        width, height, GdkPixbuf.InterpType.BILINEAR)
 
     # Setup Window
     window = Gtk.Window()
