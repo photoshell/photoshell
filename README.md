@@ -25,10 +25,6 @@ Once your virtualenv is setup and activated, and you have a config file, you
 can run the `photoshell` image viewer by doing `python -m photoshell` from the
 project root.
 
-```
-python -m photoshell /path/to/image.jpg
-```
-
 ## Legacy Usage
 
 Legacy files are located in the `legacy` folder.
