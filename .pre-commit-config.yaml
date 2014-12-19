@@ -2,6 +2,7 @@
     sha: v0.3.0
     hooks:
       -   id: autopep8-wrapper
+          args: ['-i']
       -   id: check-json
       -   id: check-yaml
       -   id: debug-statements
