@@ -8,7 +8,7 @@ all: test build pre-commit
 
 .PHONY: pre-commit
 pre-commit: .git/hooks/pre-commit
-.git/hooks/pre-commit: .pre-commit-config.yaml
+.git/hooks/pre-commit: .pre-commit-config.yaml $(VENV)
 	$(ACTIVATE); pre-commit install
 
 $(VENV): $(VENV)/bin/activate
