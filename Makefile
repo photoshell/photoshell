@@ -4,12 +4,12 @@ BIN=$(VENV)/bin
 ACTIVATE=source $(BIN)/activate
 
 .PHONY: all
-all: test build
+all: test build pre-commit
 
 .PHONY: pre-commit
 pre-commit: .git/hooks/pre-commit
 .git/hooks/pre-commit: .pre-commit-config.yaml
-	pre-commit install
+	$(ACTIVATE); pre-commit install
 
 $(VENV): $(VENV)/bin/activate
 
@@ -25,13 +25,14 @@ test: $(VENV)
 	$(ACTIVATE); tox $(REBUILD_FLAG)
 
 .PHONY: build
-build: .git/hooks/pre-commit
+build: pre-commit
 
 .PHONY: run
-run: build
+run: build $(VENV)
 	$(ACTIVATE); python -m photoshell
 
 .PHONY: clean
 clean:
 	find . -iname '*.pyc' | xargs rm -f
 	rm -rf .tox
+	rm -rf venv

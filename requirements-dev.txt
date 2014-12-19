@@ -1,3 +1,5 @@
 -e .
 
+pre-commit
 pytest
+tox
