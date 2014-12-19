@@ -22,8 +22,8 @@ echo 'library: /home/cameron/Pictures/photoshell_library' > ~/.photoshell.yaml
 ```
 
 Once your virtualenv is setup and activated, and you have a config file, you
-can run the `photoshell` image viewer by doing the following from the root of
-the project directory:
+can run the `photoshell` image viewer by doing `python -m photoshell` from the
+project root.
 
 ```
 python -m photoshell /path/to/image.jpg

@@ -14,5 +14,4 @@ with open(config_path, 'r') as config_file:
 print('Libray path is {0}'.format(config['library']))
 
 # Open photo viewer
-if len(sys.argv) > 1:
-    ui.render(sys.argv[1])
+ui.render(config['library'])
