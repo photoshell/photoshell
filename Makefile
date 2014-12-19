@@ -1,5 +1,5 @@
 REBUILD_FLAG =
-VENV=venv
+VENV=env
 BIN=$(VENV)/bin
 ACTIVATE=source $(BIN)/activate
 
@@ -35,4 +35,4 @@ run: build $(VENV)
 clean:
 	find . -iname '*.pyc' | xargs rm -f
 	rm -rf .tox
-	rm -rf venv
+	rm -rf $(VENV)
