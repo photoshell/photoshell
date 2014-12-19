@@ -67,7 +67,7 @@ def render(library):
     # Create Header
     header_bar = Gtk.HeaderBar()
     header_bar.set_show_close_button(True)
-    header_bar.props.title = 'Photo Viewer'
+    header_bar.props.title = 'PhotoShell'
 
     box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
     Gtk.StyleContext.add_class(box.get_style_context(), 'linked')
