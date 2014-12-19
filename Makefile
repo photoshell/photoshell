@@ -27,6 +27,10 @@ test: $(VENV)
 .PHONY: build
 build: .git/hooks/pre-commit
 
+.PHONY: run
+run: build
+	$(ACTIVATE); python -m photoshell
+
 .PHONY: clean
 clean:
 	find . -iname '*.pyc' | xargs rm -f
