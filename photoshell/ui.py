@@ -1,6 +1,6 @@
 import os
 
-from gi.repository import Gtk, GdkPixbuf
+from gi.repository import Gtk, GdkPixbuf, Gio
 from PIL import Image
 
 
@@ -69,20 +69,40 @@ def render(library):
     header_bar.set_show_close_button(True)
     header_bar.props.title = 'PhotoShell'
 
-    box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-    Gtk.StyleContext.add_class(box.get_style_context(), 'linked')
+    navigation_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+    Gtk.StyleContext.add_class(navigation_box.get_style_context(), 'linked')
 
     prev_button = Gtk.Button()
     prev_button.add(Gtk.Arrow(Gtk.ArrowType.LEFT, Gtk.ShadowType.NONE))
     prev_button.connect('clicked', prev_image)
-    box.add(prev_button)
+    navigation_box.add(prev_button)
 
     next_button = Gtk.Button()
     next_button.add(Gtk.Arrow(Gtk.ArrowType.RIGHT, Gtk.ShadowType.NONE))
     next_button.connect('clicked', next_image)
-    box.add(next_button)
+    navigation_box.add(next_button)
 
-    header_bar.pack_start(box)
+    import_button = Gtk.Button()
+    import_icon = Gio.ThemedIcon(name="insert-image-symbolic")
+    import_image = Gtk.Image.new_from_gicon(import_icon, Gtk.IconSize.BUTTON)
+    import_button.add(import_image)
+
+    settings_button = Gtk.Button()
+    settings_icon = Gio.ThemedIcon(name="emblem-system-symbolic")
+    settings_image = Gtk.Image.new_from_gicon(
+        settings_icon, Gtk.IconSize.BUTTON)
+    settings_button.add(settings_image)
+    header_bar.pack_end(settings_button)
+
+    terminal_button = Gtk.Button()
+    terminal_icon = Gio.ThemedIcon(name="utilities-terminal-symbolic")
+    terminal_image = Gtk.Image.new_from_gicon(
+        terminal_icon, Gtk.IconSize.BUTTON)
+    terminal_button.add(terminal_image)
+    header_bar.pack_end(terminal_button)
+
+    header_bar.pack_start(navigation_box)
+    header_bar.pack_start(import_button)
 
     # Setup Window
     window = Gtk.Window()
