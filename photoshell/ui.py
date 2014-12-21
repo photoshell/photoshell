@@ -3,6 +3,8 @@ import os
 from gi.repository import Gtk, GdkPixbuf, Gio
 from PIL import Image
 
+from photoshell.library import Library
+
 
 def load_image(file_name):
     loader = GdkPixbuf.PixbufLoader.new()
@@ -38,29 +40,20 @@ def render(library):
     # Load Images
     file_names = []
 
-    for root, dirs, files in os.walk(os.path.join(library, 'thumbnail')):
-        for file_name in files:
-            if file_name.split('.')[-1] in ['jpg', 'JPG']:
-                file_names.append(os.path.join(root, file_name))
+    selection = Library(library).all()
 
     current_image = None
-    current_file = 0
 
     def prev_image(button):
-        nonlocal current_image
-        nonlocal current_file
-        window.remove(current_image)
-        current_file = (current_file - 1) % len(file_names)
-        current_image = load_image(file_names[current_file])
-        window.add(current_image)
-        window.show_all()
+        set_image(selection.next().thumbnail)
 
     def next_image(button):
+        set_image(selection.prev().thumbnail)
+
+    def set_image(image_name):
         nonlocal current_image
-        nonlocal current_file
         window.remove(current_image)
-        current_file = (current_file + 1) % len(file_names)
-        current_image = load_image(file_names[current_file])
+        current_image = load_image(image_name)
         window.add(current_image)
         window.show_all()
 
@@ -109,7 +102,7 @@ def render(library):
     window.set_titlebar(header_bar)
     window.set_position(Gtk.WindowPosition.CENTER)
     window.connect('delete-event', Gtk.main_quit)
-    current_image = load_image(file_names[current_file])
+    current_image = load_image(selection.current().thumbnail)
     window.add(current_image)
     window.show_all()
 
