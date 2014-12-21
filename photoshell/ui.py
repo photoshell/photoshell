@@ -1,7 +1,7 @@
 import os
 
 from gi.repository import Gtk, GdkPixbuf, Gio
-from PIL import Image
+from wand.image import Image
 
 from photoshell.library import Library
 
@@ -12,8 +12,8 @@ def load_image(file_name):
     loader.close()
 
     # Get Image Data
-    image = Image.open(file_name)
-    width, height = image.size
+    with Image(filename=file_name) as image:
+        width, height = image.size
 
     # TODO: Don't hard code this
     max_height = 1024
