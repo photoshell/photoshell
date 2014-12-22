@@ -53,6 +53,10 @@ def render(library_path):
     def next_image(button):
         set_image(selection.prev().thumbnail)
 
+    def jump_to_image(photo_hash):
+        selection.jump(photo_hash)
+        set_image(selection.current().thumbnail)
+
     def set_image(image_name):
         nonlocal current_image
         new_image = load_image(image_name)
@@ -97,14 +101,14 @@ def render(library_path):
                 header_bar.pack_start(progress)
                 window.show_all()
 
-                def imported(percent):
+                def imported(photo_hash, percent):
                     nonlocal selection
                     nonlocal prev_image
                     nonlocal progress
 
                     progress.set_fraction(percent)
                     selection = library.all()
-                    prev_image(None)
+                    jump_to_image(photo_hash)
 
                 library.import_photos(
                     filename, notify=print, imported=imported)

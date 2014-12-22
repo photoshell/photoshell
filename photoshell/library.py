@@ -52,31 +52,34 @@ class Library(object):
 
             file_hash = self.hash_file(file_path)
 
-            # copy file
-            file_name = '{file_hash}.{extension}'.format(
-                file_hash=file_hash,
-                extension=file_path.split('/')[-1].split('.')[-1],
-            )
-            new_file_path = os.path.join(self.library_path, 'raw', file_name)
-            shutil.copyfile(
-                file_path, os.path.join(self.library_path, 'raw', file_name))
+            if file_hash not in self.hashes:
+                # copy file
+                file_name = '{file_hash}.{extension}'.format(
+                    file_hash=file_hash,
+                    extension=file_path.split('/')[-1].split('.')[-1],
+                )
+                new_file_path = os.path.join(
+                    self.library_path, 'raw', file_name)
+                shutil.copyfile(
+                    file_path, os.path.join(self.library_path, 'raw', file_name))
 
-            # generate jpg
-            thumbnail_name = '{file_hash}.{extension}'.format(
-                file_hash=file_hash,
-                extension='jpg',
-            )
-            new_thumbnail_path = os.path.join(
-                self.library_path, 'thumbnail', thumbnail_name)
-            with wand.image.Image(filename=new_file_path) as image:
-                with image.convert('jpeg') as thumbnail:
-                    thumbnail.save(filename=new_thumbnail_path)
+                # generate jpg
+                thumbnail_name = '{file_hash}.{extension}'.format(
+                    file_hash=file_hash,
+                    extension='jpg',
+                )
+                new_thumbnail_path = os.path.join(
+                    self.library_path, 'thumbnail', thumbnail_name)
+                with wand.image.Image(filename=new_file_path) as image:
+                    with image.convert('jpeg') as thumbnail:
+                        thumbnail.save(filename=new_thumbnail_path)
 
-            self.hashes.append(file_hash)
+                self.hashes.append(file_hash)
+
             num_complete += 1
 
             if imported:
-                imported(num_complete / len(file_list))
+                imported(file_hash, num_complete / len(file_list))
 
     # TODO: this shouldn't live on self
     def hash_file(self, file_path):
@@ -96,6 +99,8 @@ class Image(object):
     def __init__(self, library_path, hash_code):
         # TODO: refactor this to not need a library_path
         super(Image, self).__init__()
+
+        self.hash_code = hash_code
         self.thumbnail = os.path.join(
             library_path, 'thumbnail', hash_code + '.jpg')
 
@@ -119,4 +124,13 @@ class Selection(object):
 
     def prev(self):
         self.current_image = (self.current_image - 1) % len(self.images)
+        return self.current()
+
+    def jump(self, photo_hash):
+        # TODO: there is an idiomatic way to do this
+        for i in range(len(self.images)):
+            if self.images[i].hash_code == photo_hash:
+                self.current_image = i
+                break
+
         return self.current()
