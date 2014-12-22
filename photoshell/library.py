@@ -1,6 +1,7 @@
 import hashlib
 import os
 import shutil
+import subprocess
 
 import wand.image
 
@@ -70,7 +71,11 @@ class Library(object):
                 )
                 new_thumbnail_path = os.path.join(
                     self.library_path, 'thumbnail', thumbnail_name)
-                with wand.image.Image(filename=new_file_path) as image:
+
+                # TODO: fail gracefully here (or even at startup)
+                blob = subprocess.check_output(['dcraw', '-c', file_path])
+
+                with wand.image.Image(blob=blob) as image:
                     with image.convert('jpeg') as thumbnail:
                         thumbnail.save(filename=new_thumbnail_path)
 
