@@ -1,9 +1,10 @@
 import os
-import sys
 
 import yaml
 
-from photoshell import ui
+from photoshell.library import Library
+from photoshell.views.slideshow import Slideshow
+from photoshell.views.window import Window
 
 config_path = os.path.join(os.environ['HOME'], '.photoshell.yaml')
 
@@ -19,7 +20,6 @@ else:
     with open(config_path, 'w+') as config_file:
         yaml.dump(config, config_file, default_flow_style=False)
 
-print('Libray path is {0}'.format(config['library']))
-
 # Open photo viewer
-ui.render(config['library'])
+library = Library(config['library'])
+Window(library, Slideshow())

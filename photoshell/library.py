@@ -5,6 +5,8 @@ import subprocess
 
 import wand.image
 
+from photoshell.image import Image
+
 raw_formats = ['CR2']
 thumbnail_formats = ['JPG', 'jpg']
 
@@ -26,13 +28,19 @@ class Library(object):
         return self.query(lambda image: True)
 
     def query(self, match):
-        selection = Selection()
+        selection = Selection(self.library_path, match)
         for hash_code in self.hashes:
-            image = Image(self.library_path, hash_code)
+            image = Image(hash_code)
             if match(image):
                 selection.append(image)
 
         return selection
+
+    def update(self, selection):
+        photo_hash = selection.current().hash_code
+        new_selection = self.query(selection.query)
+        new_selection.jump(photo_hash)
+        return new_selection
 
     def import_photos(self, path, notify=None, imported=None):
         file_list = []
@@ -49,7 +57,7 @@ class Library(object):
             # TODO: skip if already imported
 
             if notify:
-                notify('Importing {0}...'.format(file_path))
+                notify(file_path.split('/')[-1])
 
             file_hash = self.hash_file(file_path)
 
@@ -61,8 +69,7 @@ class Library(object):
                 )
                 new_file_path = os.path.join(
                     self.library_path, 'raw', file_name)
-                shutil.copyfile(
-                    file_path, os.path.join(self.library_path, 'raw', file_name))
+                shutil.copyfile(file_path, new_file_path)
 
                 # generate jpg
                 thumbnail_name = '{file_hash}.{extension}'.format(
@@ -90,8 +97,9 @@ class Library(object):
     def hash_file(self, file_path):
         hash = hashlib.sha1()
 
-        # TODO: probably block size or something, although if your machine can't
-        # hold the whole file in memory you probably can't edit it anyway.
+        # TODO: probably block size or something, although if your machine
+        # can't hold the whole file in memory you probably can't edit it
+        # anyway.
         with open(file_path, 'rb') as f:
             data = f.read()
 
@@ -99,21 +107,13 @@ class Library(object):
         return hash.hexdigest()
 
 
-class Image(object):
-
-    def __init__(self, library_path, hash_code):
-        # TODO: refactor this to not need a library_path
-        super(Image, self).__init__()
-
-        self.hash_code = hash_code
-        self.thumbnail = os.path.join(
-            library_path, 'thumbnail', hash_code + '.jpg')
-
-
 class Selection(object):
 
-    def __init__(self):
+    def __init__(self, library_path, query):
         super(Selection, self).__init__()
+
+        self.library_path = library_path
+        self.query = query
         self.images = []
         self.current_image = 0
 
