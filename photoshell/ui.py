@@ -48,19 +48,25 @@ def render(library_path):
     current_image = None
 
     def prev_image(button):
-        set_image(selection.next().thumbnail)
+        set_image(selection.next())
 
     def next_image(button):
-        set_image(selection.prev().thumbnail)
+        set_image(selection.prev())
 
     def jump_to_image(photo_hash):
         selection.jump(photo_hash)
-        set_image(selection.current().thumbnail)
+        set_image(selection.current())
 
-    def set_image(image_name):
+    def set_image(image):
         nonlocal current_image
-        new_image = load_image(image_name)
-        window.remove(current_image)
+        if image:
+            new_image = load_image(image.thumbnail)
+        else:
+            new_image = Gtk.Label()
+            new_image.set_text('Your library is empty.')
+
+        if current_image:
+            window.remove(current_image)
         current_image = new_image
         window.add(current_image)
         window.show_all()
@@ -170,9 +176,8 @@ def render(library_path):
     window.set_titlebar(header_bar)
     window.set_position(Gtk.WindowPosition.CENTER)
     window.connect('delete-event', Gtk.main_quit)
-    current_image = load_image(selection.current().thumbnail)
-    window.add(current_image)
-    window.show_all()
+    window.set_default_size(800, 600)
+    set_image(selection.current())
 
     # Start the GTK loop
     Gtk.main()

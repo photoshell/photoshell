@@ -121,7 +121,10 @@ class Selection(object):
         self.images.append(image)
 
     def current(self):
-        return self.images[self.current_image]
+        if len(self.images):
+            return self.images[self.current_image]
+        else:
+            return None
 
     def next(self):
         self.current_image = (self.current_image + 1) % len(self.images)
