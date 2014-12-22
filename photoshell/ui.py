@@ -1,4 +1,5 @@
 import os
+import threading
 
 from gi.repository import Gtk, GdkPixbuf, Gio
 from wand.image import Image
@@ -32,7 +33,7 @@ def load_image(file_name):
     return Gtk.Image.new_from_pixbuf(pixbuf)
 
 
-def render(library):
+def render(library_path):
     # Use Dark Theme
     settings = Gtk.Settings.get_default()
     settings.set_property('gtk-application-prefer-dark-theme', True)
@@ -40,7 +41,9 @@ def render(library):
     # Load Images
     file_names = []
 
-    selection = Library(library).all()
+    library = Library(library_path)
+    # library.import_photos('/home/cameron/Pictures/RAW_TEST', notify=print)
+    selection = library.all()
 
     current_image = None
 
@@ -52,10 +55,66 @@ def render(library):
 
     def set_image(image_name):
         nonlocal current_image
+        new_image = load_image(image_name)
         window.remove(current_image)
-        current_image = load_image(image_name)
+        current_image = new_image
         window.add(current_image)
         window.show_all()
+
+    def import_folder(button):
+        nonlocal window
+        nonlocal library
+        nonlocal selection
+        dialog = Gtk.FileChooserDialog(
+            'Choose folder to import',
+            window,
+            Gtk.FileChooserAction.SELECT_FOLDER,
+            (
+                Gtk.STOCK_CANCEL,
+                Gtk.ResponseType.CANCEL,
+                'Select',
+                Gtk.ResponseType.OK,
+            ),
+        )
+
+        response = dialog.run()
+
+        if response == Gtk.ResponseType.OK:
+            filename = dialog.get_filename()
+        else:
+            filename = None
+
+        dialog.destroy()
+
+        if filename:
+            def do_import():
+                nonlocal import_button
+                nonlocal header_bar
+                nonlocal progress
+
+                import_button.set_sensitive(False)
+                progress.set_fraction(0)
+                header_bar.pack_start(progress)
+                window.show_all()
+
+                def imported(percent):
+                    nonlocal selection
+                    nonlocal prev_image
+                    nonlocal progress
+
+                    progress.set_fraction(percent)
+                    selection = library.all()
+                    prev_image(None)
+
+                library.import_photos(
+                    filename, notify=print, imported=imported)
+
+                import_button.set_sensitive(True)
+                header_bar.remove(progress)
+
+            thread = threading.Thread(target=do_import)
+            thread.daemon = True
+            thread.start()
 
     # Create Header
     header_bar = Gtk.HeaderBar()
@@ -78,6 +137,7 @@ def render(library):
     import_button = Gtk.Button()
     import_icon = Gio.ThemedIcon(name="insert-image-symbolic")
     import_image = Gtk.Image.new_from_gicon(import_icon, Gtk.IconSize.BUTTON)
+    import_button.connect('clicked', import_folder)
     import_button.add(import_image)
 
     settings_button = Gtk.Button()
@@ -93,6 +153,10 @@ def render(library):
         terminal_icon, Gtk.IconSize.BUTTON)
     terminal_button.add(terminal_image)
     header_bar.pack_end(terminal_button)
+
+    progress = Gtk.ProgressBar()
+    progress.set_text('Importing...')
+    progress.set_show_text(True)
 
     header_bar.pack_start(navigation_box)
     header_bar.pack_start(import_button)
