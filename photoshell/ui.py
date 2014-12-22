@@ -94,7 +94,7 @@ def render(library_path):
 
                 import_button.set_sensitive(False)
                 progress.set_fraction(0)
-                header_bar.pack_end(progress)
+                header_bar.pack_start(progress)
                 window.show_all()
 
                 def imported(percent):
