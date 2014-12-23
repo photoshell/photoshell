@@ -25,7 +25,7 @@ class Image(object):
 
         return self._height
 
-    def load_preview(self, base_path):
+    def load_preview(self, base_path, max_width=1280, max_height=1024):
         filename = os.path.join(
             base_path, 'thumbnail', '{0}.jpg'.format(self.hash_code))
 
@@ -36,10 +36,6 @@ class Image(object):
         # Get Image Data
         with wand.image.Image(filename=filename) as image:
             width, height = image.size
-
-        # TODO: Don't hard code this
-        max_height = 1024
-        max_width = 1280
 
         scale = min(max_height / height, min(max_width / width, 1))
 

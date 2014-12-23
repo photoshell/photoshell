@@ -148,3 +148,7 @@ class Selection(object):
                 break
 
         return self.current()
+
+    def each(self):
+        for image in self.images:
+            yield image
