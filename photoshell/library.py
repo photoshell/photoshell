@@ -72,7 +72,8 @@ class Library(object):
                 )
                 new_file_path = os.path.join(
                     self.library_path, 'raw', file_name)
-                shutil.copyfile(file_path, new_file_path)
+                if file_path != new_file_path:
+                    shutil.copyfile(file_path, new_file_path)
 
                 # generate jpg
                 thumbnail_name = '{file_hash}.{extension}'.format(
