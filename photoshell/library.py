@@ -37,9 +37,12 @@ class Library(object):
         return selection
 
     def update(self, selection):
-        photo_hash = selection.current().hash_code
+        current = selection.current()
+        if current:
+            photo_hash = current.hash_code
         new_selection = self.query(selection.query)
-        new_selection.jump(photo_hash)
+        if current:
+            new_selection.jump(photo_hash)
         return new_selection
 
     def import_photos(self, path, notify=None, imported=None):
@@ -80,7 +83,8 @@ class Library(object):
                     self.library_path, 'thumbnail', thumbnail_name)
 
                 # TODO: fail gracefully here (or even at startup)
-                blob = subprocess.check_output(['dcraw', '-c', file_path])
+                blob = subprocess.check_output(
+                    ['dcraw', '-c', '-e', file_path])
 
                 with wand.image.Image(blob=blob) as image:
                     with image.convert('jpeg') as thumbnail:

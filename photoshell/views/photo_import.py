@@ -37,8 +37,9 @@ class PhotoImporter(Gtk.FileChooserDialog):
 
                 def imported(photo_hash, percent):
                     self._window.progress.set_fraction(percent)
-                    self._window.selection = self._window.library.update(
-                        self._window.selection)
+                    # TODO: this is kind of awkward
+                    self._window.render_selection(self._window.library.update(
+                        self._window.selection))
 
                 def notify_progress(photo_name):
                     self._window.progress.set_text(photo_name)
