@@ -83,13 +83,14 @@ class Library(object):
                 new_thumbnail_path = os.path.join(
                     self.library_path, 'thumbnail', thumbnail_name)
 
-                # TODO: fail gracefully here (or even at startup)
-                blob = subprocess.check_output(
-                    ['dcraw', '-c', '-e', file_path])
+                if not os.path.isfile(new_thumbnail_path):
+                    # TODO: fail gracefully here (or even at startup)
+                    blob = subprocess.check_output(
+                        ['dcraw', '-c', '-e', file_path])
 
-                with wand.image.Image(blob=blob) as image:
-                    with image.convert('jpeg') as thumbnail:
-                        thumbnail.save(filename=new_thumbnail_path)
+                    with wand.image.Image(blob=blob) as image:
+                        with image.convert('jpeg') as thumbnail:
+                            thumbnail.save(filename=new_thumbnail_path)
 
                 self.hashes.append(file_hash)
 
