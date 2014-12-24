@@ -1,5 +1,6 @@
 from gi.repository import Gio
 from gi.repository import Gtk
+from gi.repository import Gdk
 
 from photoshell.views.grid import Grid
 from photoshell.views.photo_import import PhotoImporter
@@ -11,9 +12,17 @@ class Window(Gtk.Window):
     def __init__(self, config, library, primary_view):
         super(Window, self).__init__()
 
+        self.keyReleaseBindings = {
+            Gdk.KEY_Left: lambda self, button: self.prev_photo(button),
+            Gdk.KEY_Right: lambda self, button: self.next_photo(button)
+        }
+
         self.library = library
         self.primary_view = None
         self.selection = library.all()
+
+        # Setup keyboard bindings
+        self.connect("key-release-event", self.on_key_release)
 
         # Use Dark Theme
         settings = Gtk.Settings.get_default()
@@ -144,3 +153,6 @@ class Window(Gtk.Window):
 
     def import_folder(self, button):
         PhotoImporter(self).import_photos()
+
+    def on_key_release(self, widget, ev, data=None):
+        self.keyReleaseBindings.get(ev.keyval)(self, widget)
