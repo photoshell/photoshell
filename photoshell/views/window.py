@@ -1,7 +1,9 @@
 from gi.repository import Gio
 from gi.repository import Gtk
 
+from photoshell.views.grid import Grid
 from photoshell.views.photo_import import PhotoImporter
+from photoshell.views.slideshow import Slideshow
 
 
 class Window(Gtk.Window):
@@ -10,7 +12,7 @@ class Window(Gtk.Window):
         super(Window, self).__init__()
 
         self.library = library
-        self.primary_view = primary_view
+        self.primary_view = None
         self.selection = library.all()
 
         # Use Dark Theme
@@ -69,14 +71,36 @@ class Window(Gtk.Window):
         terminal_button.add(terminal_image)
         self.header_bar.pack_end(terminal_button)
 
+        # Create view box
+        view_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        Gtk.StyleContext.add_class(
+            view_box.get_style_context(), 'linked')
+
+        slideshow_button = Gtk.Button()
+        slideshow_icon = Gio.ThemedIcon(name="view-paged-symbolic")
+        slideshow_image = Gtk.Image.new_from_gicon(
+            slideshow_icon, Gtk.IconSize.BUTTON)
+        slideshow_button.add(slideshow_image)
+        view_box.add(slideshow_button)
+        slideshow_button.connect('clicked', self.slideshow_view)
+
+        grid_button = Gtk.Button()
+        grid_icon = Gio.ThemedIcon(name="view-grid-symbolic")
+        grid_image = Gtk.Image.new_from_gicon(
+            grid_icon, Gtk.IconSize.BUTTON)
+        grid_button.add(grid_image)
+        grid_button.connect('clicked', self.grid_view)
+
+        view_box.add(grid_button)
+
+        self.header_bar.pack_end(view_box)
+
         # Setup Window
         self.set_titlebar(self.header_bar)
         self.set_position(Gtk.WindowPosition.CENTER)
         self.connect('delete-event', Gtk.main_quit)
         self.set_default_size(800, 600)
-        self.add(primary_view)
-        self.primary_view.render_selection(self.selection)
-        self.show_all()
+        self.set_primary_view(primary_view)
 
         # Start the GTK loop
         Gtk.main()
@@ -93,6 +117,27 @@ class Window(Gtk.Window):
     def prev_photo(self, button):
         self.selection.prev()
         self.render_selection(self.selection)
+
+    def slideshow_view(self, button):
+        if type(self.primary_view) == Slideshow:
+            return
+
+        self.set_primary_view(Slideshow())
+
+    def grid_view(self, button):
+        if type(self.primary_view) == Grid:
+            return
+
+        self.set_primary_view(Grid())
+
+    def set_primary_view(self, view):
+        if self.primary_view:
+            self.remove(self.primary_view)
+        self.primary_view = view
+
+        self.add(self.primary_view)
+        self.primary_view.render_selection(self.selection)
+        self.show_all()
 
     def import_folder(self, button):
         PhotoImporter(self).import_photos()

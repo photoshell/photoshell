@@ -4,7 +4,7 @@ from gi.repository import GObject
 import yaml
 
 from photoshell.library import Library
-from photoshell.views.grid import Grid
+from photoshell.views.slideshow import Slideshow
 from photoshell.views.window import Window
 
 config_path = os.path.join(os.environ['HOME'], '.photoshell.yaml')
@@ -23,4 +23,4 @@ else:
 
 # Open photo viewer
 library = Library(config['library'])
-Window(library, Grid())
+Window(library, Slideshow())
