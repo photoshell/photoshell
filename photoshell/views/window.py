@@ -76,7 +76,8 @@ class Window(Gtk.Window):
         Gtk.StyleContext.add_class(
             view_box.get_style_context(), 'linked')
 
-        slideshow_button = Gtk.Button()
+        slideshow_button = Gtk.RadioButton()
+        slideshow_button.set_property('draw-indicator', False)
         slideshow_icon = Gio.ThemedIcon(name="view-paged-symbolic")
         slideshow_image = Gtk.Image.new_from_gicon(
             slideshow_icon, Gtk.IconSize.BUTTON)
@@ -84,7 +85,8 @@ class Window(Gtk.Window):
         view_box.add(slideshow_button)
         slideshow_button.connect('clicked', self.slideshow_view)
 
-        grid_button = Gtk.Button()
+        grid_button = Gtk.RadioButton.new_from_widget(slideshow_button)
+        grid_button.set_property('draw-indicator', False)
         grid_icon = Gio.ThemedIcon(name="view-grid-symbolic")
         grid_image = Gtk.Image.new_from_gicon(
             grid_icon, Gtk.IconSize.BUTTON)
