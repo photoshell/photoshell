@@ -11,7 +11,8 @@ config_path = os.path.join(os.environ['HOME'], '.photoshell.yaml')
 
 config = dict(
     {
-        'library': os.path.join(os.environ['HOME'], 'Pictures/Photoshell')
+        'library': os.path.join(os.environ['HOME'], 'Pictures/Photoshell'),
+        'dark_theme': True
     }
 )
 if os.path.isfile(config_path):
@@ -23,4 +24,4 @@ else:
 
 # Open photo viewer
 library = Library(config['library'])
-Window(library, Slideshow())
+Window(config, library, Slideshow())
