@@ -1,6 +1,11 @@
 import threading
 
 from gi.repository import Gtk
+from gi.repository import GLib
+
+
+THUMB_WIDTH = 256
+THUMB_HEIGHT = 256
 
 
 class Grid(Gtk.ScrolledWindow):
@@ -15,17 +20,18 @@ class Grid(Gtk.ScrolledWindow):
 
         for image in selection.each():
             box = Gtk.Box()
-            box.set_size_request(256, 256)
+            box.set_size_request(THUMB_WIDTH, THUMB_HEIGHT)
             self.flowbox.add(box)
             photos.append((image, box))
 
+        self.show_all()
+
         def load_thumbnails():
-            nonlocal selection
-
             for photo, box in photos:
-                box.add(photo.load_preview(selection.library_path, 256, 256))
-                self.show_all()
+                GLib.idle_add(box.set_center_widget, photo.load_preview(
+                    selection.library_path, THUMB_HEIGHT, THUMB_HEIGHT))
+                GLib.idle_add(box.show_all)
 
-        thread = threading.Thread(target=load_thumbnails)
-        thread.daemon = True
-        thread.start()
+        load_thread = threading.Thread(target=load_thumbnails)
+        load_thread.daemon = True
+        load_thread.start()
