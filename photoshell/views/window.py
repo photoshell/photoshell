@@ -8,7 +8,7 @@ from photoshell.views.slideshow import Slideshow
 
 class Window(Gtk.Window):
 
-    def __init__(self, library, primary_view):
+    def __init__(self, config, library, primary_view):
         super(Window, self).__init__()
 
         self.library = library
@@ -17,7 +17,8 @@ class Window(Gtk.Window):
 
         # Use Dark Theme
         settings = Gtk.Settings.get_default()
-        settings.set_property('gtk-application-prefer-dark-theme', True)
+        if 'dark_theme' in config and config['dark_theme'] == True:
+            settings.set_property('gtk-application-prefer-dark-theme', True)
 
         # Create Header
         self.header_bar = Gtk.HeaderBar()
