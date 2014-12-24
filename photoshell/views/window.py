@@ -155,4 +155,4 @@ class Window(Gtk.Window):
         PhotoImporter(self).import_photos()
 
     def on_key_release(self, widget, ev, data=None):
-        self.keyReleaseBindings.get(ev.keyval)(self, widget)
+        self.keyReleaseBindings.get(ev.keyval, lambda s, w: None)(self, widget)
