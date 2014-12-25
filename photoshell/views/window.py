@@ -112,6 +112,7 @@ class Window(Gtk.Window):
         self.header_bar.pack_end(view_box)
 
         # Setup Window
+        self.set_wmclass("PhotoShell", "PhotoShell")
         self.set_titlebar(self.header_bar)
         self.set_position(Gtk.WindowPosition.CENTER)
         self.connect('delete-event', Gtk.main_quit)
