@@ -133,11 +133,15 @@ class Selection(object):
             return None
 
     def next(self):
-        self.current_image = (self.current_image + 1) % len(self.images)
+        l = len(self.images)
+        if l > 1:
+            self.current_image = (self.current_image + 1) % l
         return self.current()
 
     def prev(self):
-        self.current_image = (self.current_image - 1) % len(self.images)
+        l = len(self.images)
+        if l > 1:
+            self.current_image = (self.current_image - 1) % l
         return self.current()
 
     def jump(self, photo_hash):

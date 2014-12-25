@@ -42,12 +42,16 @@ class Window(Gtk.Window):
         prev_button = Gtk.Button()
         prev_button.add(Gtk.Arrow(Gtk.ArrowType.LEFT, Gtk.ShadowType.NONE))
         prev_button.connect('clicked', self.prev_photo)
+        prev_button.set_sensitive(False)
         navigation_box.add(prev_button)
+        self.prev_button = prev_button
 
         next_button = Gtk.Button()
         next_button.add(Gtk.Arrow(Gtk.ArrowType.RIGHT, Gtk.ShadowType.NONE))
         next_button.connect('clicked', self.next_photo)
+        next_button.set_sensitive(False)
         navigation_box.add(next_button)
+        self.next_button = next_button
 
         self.header_bar.pack_start(navigation_box)
 
@@ -114,6 +118,8 @@ class Window(Gtk.Window):
         self.set_default_size(800, 600)
         self.set_primary_view(primary_view)
 
+        self.updateUi()
+
         # Start the GTK loop
         Gtk.main()
 
@@ -151,8 +157,17 @@ class Window(Gtk.Window):
         self.primary_view.render_selection(self.selection)
         self.show_all()
 
+    def updateUi(self):
+        if len(self.library.hashes) < 2:
+            self.prev_button.set_sensitive(False)
+            self.next_button.set_sensitive(False)
+        else:
+            self.prev_button.set_sensitive(True)
+            self.next_button.set_sensitive(True)
+
     def import_folder(self, button):
         PhotoImporter(self).import_photos()
+        updateUi(self)
 
     def on_key_release(self, widget, ev, data=None):
         self.keyReleaseBindings.get(ev.keyval, lambda s, w: None)(self, widget)
