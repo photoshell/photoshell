@@ -17,9 +17,17 @@ class Library(object):
         super(Library, self).__init__()
 
         self.library_path = library_path
+        self.raw_path = os.path.join(library_path, 'raw')
+        self.thumbnail_path = os.path.join(library_path, 'thumbnail')
+        if not os.path.exists(library_path):
+            os.makedirs(library_path)
+        if not os.path.exists(self.raw_path):
+            os.makedirs(self.raw_path)
+        if not os.path.exists(self.thumbnail_path):
+            os.makedirs(self.thumbnail_path)
         self.hashes = []
 
-        for root, _, files in os.walk(os.path.join(library_path, 'thumbnail')):
+        for root, _, files in os.walk(self.thumbnail_path):
             for file_name in files:
                 if file_name.split('.')[-1] in thumbnail_formats:
                     self.hashes.append(file_name.split('/')[-1].split('.')[0])
@@ -70,8 +78,7 @@ class Library(object):
                     file_hash=file_hash,
                     extension=file_path.split('/')[-1].split('.')[-1],
                 )
-                new_file_path = os.path.join(
-                    self.library_path, 'raw', file_name)
+                new_file_path = os.path.join(self.raw_path, file_name)
                 if file_path != new_file_path:
                     shutil.copyfile(file_path, new_file_path)
 
@@ -80,8 +87,8 @@ class Library(object):
                     file_hash=file_hash,
                     extension='jpg',
                 )
-                new_thumbnail_path = os.path.join(
-                    self.library_path, 'thumbnail', thumbnail_name)
+                new_thumbnail_path = os.path.join(self.thumbnail_path,
+                                                  thumbnail_name)
 
                 if not os.path.isfile(new_thumbnail_path):
                     # TODO: fail gracefully here (or even at startup)
