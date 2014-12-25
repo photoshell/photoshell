@@ -118,7 +118,7 @@ class Window(Gtk.Window):
         self.set_default_size(800, 600)
         self.set_primary_view(primary_view)
 
-        self.updateUi()
+        self.update_ui()
 
         # Start the GTK loop
         Gtk.main()
@@ -157,7 +157,7 @@ class Window(Gtk.Window):
         self.primary_view.render_selection(self.selection)
         self.show_all()
 
-    def updateUi(self):
+    def update_ui(self):
         if len(self.library.hashes) < 2:
             self.prev_button.set_sensitive(False)
             self.next_button.set_sensitive(False)
@@ -167,7 +167,7 @@ class Window(Gtk.Window):
 
     def import_folder(self, button):
         PhotoImporter(self).import_photos()
-        updateUi(self)
+        self.update_ui()
 
     def on_key_release(self, widget, ev, data=None):
         self.keyReleaseBindings.get(ev.keyval, lambda s, w: None)(self, widget)
