@@ -23,5 +23,5 @@ else:
         yaml.dump(config, config_file, default_flow_style=False)
 
 # Open photo viewer
-library = Library(config['library'])
+library = Library(config)
 Window(config, library, Slideshow())

@@ -13,14 +13,14 @@ thumbnail_formats = ['JPG', 'jpg']
 
 class Library(object):
 
-    def __init__(self, library_path):
+    def __init__(self, config):
         super(Library, self).__init__()
 
-        self.library_path = library_path
-        self.raw_path = os.path.join(library_path, 'raw')
-        self.thumbnail_path = os.path.join(library_path, 'thumbnail')
-        if not os.path.exists(library_path):
-            os.makedirs(library_path)
+        self.library_path = config['library']
+        self.raw_path = os.path.join(self.library_path, 'raw')
+        self.thumbnail_path = os.path.join(self.library_path, 'thumbnail')
+        if not os.path.exists(self.library_path):
+            os.makedirs(self.library_path)
         if not os.path.exists(self.raw_path):
             os.makedirs(self.raw_path)
         if not os.path.exists(self.thumbnail_path):
