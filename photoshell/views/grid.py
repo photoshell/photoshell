@@ -16,6 +16,11 @@ class Grid(Gtk.ScrolledWindow):
         self.add(self.flowbox)
 
     def render_selection(self, selection):
+        # TODO: actually handle updates
+        self.get_children()[0].remove(self.flowbox)
+        self.flowbox = Gtk.FlowBox()
+        self.get_children()[0].add(self.flowbox)
+
         photos = []
 
         for image in selection.each():

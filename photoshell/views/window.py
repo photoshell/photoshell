@@ -126,8 +126,7 @@ class Window(Gtk.Window):
 
     def render_selection(self, selection):
         self.selection = selection
-        self.primary_view.render_selection(selection)
-        self.show_all()
+        self.update_ui()
 
     def next_photo(self, button):
         self.selection.next()
@@ -159,6 +158,8 @@ class Window(Gtk.Window):
         self.show_all()
 
     def update_ui(self):
+        self.primary_view.render_selection(self.selection)
+
         if len(self.library.hashes) < 2:
             self.prev_button.set_sensitive(False)
             self.next_button.set_sensitive(False)
@@ -166,9 +167,10 @@ class Window(Gtk.Window):
             self.prev_button.set_sensitive(True)
             self.next_button.set_sensitive(True)
 
+        self.show_all()
+
     def import_folder(self, button):
         PhotoImporter(self).import_photos()
-        self.update_ui()
 
     def on_key_release(self, widget, ev, data=None):
         self.keyReleaseBindings.get(ev.keyval, lambda s, w: None)(self, widget)
