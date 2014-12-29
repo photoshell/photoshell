@@ -7,8 +7,8 @@ import wand.image
 
 class Image(object):
 
-    def __init__(self, hash_code):
-        self.hash_code = hash_code
+    def __init__(self, image_path):
+        self.image_path = image_path
 
         self._width = None
         self._height = None
@@ -26,15 +26,12 @@ class Image(object):
         return self._height
 
     def load_pixbuf(self, base_path, max_width=1280, max_height=1024):
-        filename = os.path.join(
-            base_path, '.cache', '{0}.tiff'.format(self.hash_code))
-
         loader = GdkPixbuf.PixbufLoader.new()
-        loader.write(open(filename, 'rb').read())
+        loader.write(open(self.image_path, 'rb').read())
         loader.close()
 
         # Get Image Data
-        with wand.image.Image(filename=filename) as image:
+        with wand.image.Image(filename=self.image_path) as image:
             width, height = image.size
 
         scale = min(max_height / height, min(max_width / width, 1))

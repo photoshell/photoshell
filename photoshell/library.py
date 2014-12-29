@@ -4,11 +4,11 @@ import shutil
 import subprocess
 
 import wand.image
+import yaml
 
 from photoshell.image import Image
 
 raw_formats = ['CR2']
-exposed_formats = ['tiff']
 
 
 class Library(object):
@@ -22,20 +22,22 @@ class Library(object):
             os.makedirs(self.library_path)
         if not os.path.exists(self.cache_path):
             os.makedirs(self.cache_path)
-        self.hashes = []
+        self.sidecars = []
 
-        for root, _, files in os.walk(self.cache_path):
+        for root, _, files in os.walk(self.library_path):
             for file_name in files:
-                if file_name.split('.')[-1] in exposed_formats:
-                    self.hashes.append(file_name.split('/')[-1].split('.')[0])
+                if file_name.split('.')[-1] == 'yaml':
+                    file_path = os.path.join(root, file_name)
+                    with open(file_path, 'r') as sidecar:
+                        self.sidecars.append(yaml.load(sidecar))
 
     def all(self):
         return self.query(lambda image: True)
 
     def query(self, match):
         selection = Selection(self.library_path, match)
-        for hash_code in self.hashes:
-            image = Image(hash_code)
+        for sidecar in self.sidecars:
+            image = Image(sidecar['developed_path'])
             if match(image):
                 selection.append(image)
 
@@ -69,7 +71,13 @@ class Library(object):
 
             file_hash = self.hash_file(file_path)
 
-            if file_hash not in self.hashes:
+            exists = False
+            for sidecar in self.sidecars:
+                if sidecar['hash'] == file_hash:
+                    exists = True
+                    break
+
+            if not exists:
                 # copy file
                 file_name = '{file_hash}.{extension}'.format(
                     file_hash=file_hash,
@@ -79,28 +87,51 @@ class Library(object):
                 if file_path != new_file_path:
                     shutil.copyfile(file_path, new_file_path)
 
-                # create metadata
-
-                # generate jpg
-                exposed_name = '{file_hash}.{extension}'.format(
+                # develop photo
+                developed_name = '{file_hash}.{extension}'.format(
                     file_hash=file_hash,
                     extension='tiff',
                 )
-                exposed_path = os.path.join(
+                developed_path = os.path.join(
                     self.cache_path,
-                    exposed_name
+                    developed_name,
                 )
 
-                if not os.path.isfile(exposed_path):
+                if not os.path.isfile(developed_path):
                     # TODO: fail gracefully here (or even at startup)
                     blob = subprocess.check_output(
                         ['dcraw', '-c', '-e', file_path])
 
                     with wand.image.Image(blob=blob) as image:
-                        with image.convert('jpeg') as exposed:
-                            exposed.save(filename=exposed_path)
+                        with image.convert('jpeg') as developed:
+                            developed.save(filename=developed_path)
 
-                self.hashes.append(file_hash)
+                # create metadata
+                meta_name = '{file_hash}.{extension}'.format(
+                    file_hash=file_hash,
+                    extension='yaml',
+                )
+
+                meta_path = os.path.join(
+                    self.library_path,
+                    meta_name,
+                )
+
+                # TODO: rename these to be sidecar instead of meta
+                if not os.path.isfile(meta_path):
+                    metadata = {
+                        "hash": file_hash,
+                        "developed_path": developed_path
+                    }
+
+                    with open(meta_path, 'w+') as meta_file:
+                        yaml.dump(
+                            metadata, meta_file, default_flow_style=False)
+                else:
+                    with open(meta_path, 'r') as meta_file:
+                        metadata = yaml.load(meta_file)
+
+            self.sidecars.append(metadata)
 
             num_complete += 1
 

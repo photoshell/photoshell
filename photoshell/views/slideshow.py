@@ -8,7 +8,7 @@ class Slideshow(Gtk.Box):
     def __init__(self):
         super(Slideshow, self).__init__()
         self.image = Gtk.Image()
-        self.photo_hash = None
+        self.image_path = None
         self.pack_start(self.image, True, True, 0)
         self.mutex = Lock()
 
@@ -18,10 +18,11 @@ class Slideshow(Gtk.Box):
         new_image = selection.current()
 
         if new_image:
-            if self.photo_hash != new_image.hash_code:
+            # TODO: image path is bad criteria for redrawing if we re-develop
+            if self.image_path != new_image.image_path:
                 self.image.set_from_pixbuf(
                     new_image.load_pixbuf(selection.library_path),
                 )
-                self.photo_hash = new_image.hash_code,
+                self.image_path = new_image.image_path
 
         self.mutex.release()

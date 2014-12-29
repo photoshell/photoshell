@@ -160,7 +160,7 @@ class Window(Gtk.Window):
     def update_ui(self):
         self.primary_view.render_selection(self.selection)
 
-        if len(self.library.hashes) < 2:
+        if len(self.library.sidecars) < 2:
             self.prev_button.set_sensitive(False)
             self.next_button.set_sensitive(False)
         else:
