@@ -25,7 +25,7 @@ class Image(object):
 
         return self._height
 
-    def load_preview(self, base_path, max_width=1280, max_height=1024):
+    def load_pixbuf(self, base_path, max_width=1280, max_height=1024):
         filename = os.path.join(
             base_path, 'thumbnail', '{0}.jpg'.format(self.hash_code))
 
@@ -48,4 +48,7 @@ class Image(object):
         pixbuf = pixbuf.scale_simple(
             width, height, GdkPixbuf.InterpType.BILINEAR)
 
-        return Gtk.Image.new_from_pixbuf(pixbuf)
+        return pixbuf
+
+    def load_preview(self, base_path, max_width=1280, max_height=1024):
+        return Gtk.Image.new_from_pixbuf(self.load_pixbuf(base_path, max_width, max_height))
