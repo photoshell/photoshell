@@ -27,7 +27,7 @@ class Image(object):
 
     def load_pixbuf(self, base_path, max_width=1280, max_height=1024):
         filename = os.path.join(
-            base_path, 'thumbnail', '{0}.jpg'.format(self.hash_code))
+            base_path, '.cache', '{0}.tiff'.format(self.hash_code))
 
         loader = GdkPixbuf.PixbufLoader.new()
         loader.write(open(filename, 'rb').read())

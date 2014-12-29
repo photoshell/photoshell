@@ -8,7 +8,7 @@ import wand.image
 from photoshell.image import Image
 
 raw_formats = ['CR2']
-thumbnail_formats = ['JPG', 'jpg']
+exposed_formats = ['tiff']
 
 
 class Library(object):
@@ -17,19 +17,16 @@ class Library(object):
         super(Library, self).__init__()
 
         self.library_path = config['library']
-        self.raw_path = os.path.join(self.library_path, 'raw')
-        self.thumbnail_path = os.path.join(self.library_path, 'thumbnail')
+        self.cache_path = os.path.join(self.library_path, '.cache')
         if not os.path.exists(self.library_path):
             os.makedirs(self.library_path)
-        if not os.path.exists(self.raw_path):
-            os.makedirs(self.raw_path)
-        if not os.path.exists(self.thumbnail_path):
-            os.makedirs(self.thumbnail_path)
+        if not os.path.exists(self.cache_path):
+            os.makedirs(self.cache_path)
         self.hashes = []
 
-        for root, _, files in os.walk(self.thumbnail_path):
+        for root, _, files in os.walk(self.cache_path):
             for file_name in files:
-                if file_name.split('.')[-1] in thumbnail_formats:
+                if file_name.split('.')[-1] in exposed_formats:
                     self.hashes.append(file_name.split('/')[-1].split('.')[0])
 
     def all(self):
@@ -78,26 +75,30 @@ class Library(object):
                     file_hash=file_hash,
                     extension=file_path.split('/')[-1].split('.')[-1],
                 )
-                new_file_path = os.path.join(self.raw_path, file_name)
+                new_file_path = os.path.join(self.library_path, file_name)
                 if file_path != new_file_path:
                     shutil.copyfile(file_path, new_file_path)
 
-                # generate jpg
-                thumbnail_name = '{file_hash}.{extension}'.format(
-                    file_hash=file_hash,
-                    extension='jpg',
-                )
-                new_thumbnail_path = os.path.join(self.thumbnail_path,
-                                                  thumbnail_name)
+                # create metadata
 
-                if not os.path.isfile(new_thumbnail_path):
+                # generate jpg
+                exposed_name = '{file_hash}.{extension}'.format(
+                    file_hash=file_hash,
+                    extension='tiff',
+                )
+                exposed_path = os.path.join(
+                    self.cache_path,
+                    exposed_name
+                )
+
+                if not os.path.isfile(exposed_path):
                     # TODO: fail gracefully here (or even at startup)
                     blob = subprocess.check_output(
                         ['dcraw', '-c', '-e', file_path])
 
                     with wand.image.Image(blob=blob) as image:
-                        with image.convert('jpeg') as thumbnail:
-                            thumbnail.save(filename=new_thumbnail_path)
+                        with image.convert('jpeg') as exposed:
+                            exposed.save(filename=exposed_path)
 
                 self.hashes.append(file_hash)
 
