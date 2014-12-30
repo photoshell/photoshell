@@ -46,10 +46,10 @@ class Library(object):
     def update(self, selection):
         current = selection.current()
         if current:
-            photo_hash = current.hash_code
+            image_path = current.image_path
         new_selection = self.query(selection.query)
         if current:
-            new_selection.jump(photo_hash)
+            new_selection.jump(image_path)
         return new_selection
 
     def import_photos(self, path, notify=None, imported=None):
@@ -131,7 +131,7 @@ class Library(object):
                     with open(meta_path, 'r') as meta_file:
                         metadata = yaml.load(meta_file)
 
-            self.sidecars.append(metadata)
+                self.sidecars.append(metadata)
 
             num_complete += 1
 
@@ -183,10 +183,10 @@ class Selection(object):
             self.current_image = (self.current_image - 1) % l
         return self.current()
 
-    def jump(self, photo_hash):
+    def jump(self, image_path):
         # TODO: there is an idiomatic way to do this
         for i in range(len(self.images)):
-            if self.images[i].hash_code == photo_hash:
+            if self.images[i].image_path == image_path:
                 self.current_image = i
                 break
 

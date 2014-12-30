@@ -29,7 +29,14 @@ class PhotoImporter(Gtk.FileChooserDialog):
         else:
             filename = None
 
-        if filename:
+        dialog = Gtk.Dialog("Import Options", self, 0, (
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+            Gtk.STOCK_OK, Gtk.ResponseType.OK,
+        ))
+        response = dialog.run()
+        dialog.destroy()
+
+        if filename and response == Gtk.ResponseType.OK:
             def do_import():
                 GLib.idle_add(self._window.import_button.set_sensitive, False)
                 GLib.idle_add(self._window.progress.set_fraction, 0)
