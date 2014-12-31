@@ -124,6 +124,7 @@ class PhotoImporter(Gtk.FileChooserDialog):
 
                 self._window.library.import_photos(
                     filename, notify=notify_progress, imported=imported,
+                    copy_photos=opts['copy_photos'],
                     delete_originals=opts['delete_originals'])
 
                 GLib.idle_add(self._window.import_button.set_sensitive, True)

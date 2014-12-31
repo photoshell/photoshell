@@ -53,7 +53,7 @@ class Library(object):
         return new_selection
 
     def import_photos(self, path, notify=None, imported=None,
-                      delete_originals=False):
+                      copy_photos=True, delete_originals=False):
         file_list = []
 
         for root, _, files in os.walk(path):
@@ -79,12 +79,16 @@ class Library(object):
                     break
 
             if not exists:
-                # copy file
-                file_name = '{file_hash}{extension}'.format(
-                    file_hash=file_hash,
-                    extension=os.path.splitext(file_path)[1],
-                )
-                new_file_path = os.path.join(self.library_path, file_name)
+                if copy_photos:
+                    file_name = '{file_hash}{extension}'.format(
+                        file_hash=file_hash,
+                        extension=os.path.splitext(file_path)[1],
+                    )
+
+                    new_file_path = os.path.join(self.library_path, file_name)
+                else:
+                    new_file_path = file_path
+
                 if file_path != new_file_path:
                     shutil.copyfile(file_path, new_file_path)
                     # TODO: Make sure the file copied w/o errors first?
@@ -125,7 +129,8 @@ class Library(object):
                 if not os.path.isfile(meta_path):
                     metadata = {
                         "hash": file_hash,
-                        "developed_path": developed_path
+                        "developed_path": developed_path,
+                        "original_path": new_file_path,
                     }
 
                     with open(meta_path, 'w+') as meta_file:
