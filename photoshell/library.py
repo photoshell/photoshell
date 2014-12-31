@@ -140,7 +140,7 @@ class Library(object):
                 )
 
                 meta_path = os.path.join(
-                    self.library_path,
+                    import_path,
                     meta_name,
                 )
 
@@ -150,6 +150,7 @@ class Library(object):
                         "hash": file_hash,
                         "developed_path": developed_path,
                         "original_path": new_file_path,
+                        "datetime": dt,
                     }
 
                     with open(meta_path, 'w+') as meta_file:
