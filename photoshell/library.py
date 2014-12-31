@@ -6,7 +6,9 @@ import subprocess
 import wand.image
 import yaml
 
+from datetime import datetime
 from photoshell.image import Image
+from photoshell.raw.cr2 import Cr2
 
 raw_formats = ['.CR2']
 
@@ -17,6 +19,8 @@ class Library(object):
         super(Library, self).__init__()
 
         self.library_path = config['library']
+        self.import_path = os.path.join(self.library_path,
+                                        config['import_path'])
         self.cache_path = os.path.join(self.library_path, '.cache')
         if not os.path.exists(self.library_path):
             os.makedirs(self.library_path)
@@ -71,6 +75,19 @@ class Library(object):
                 notify(os.path.basename(file_path))
 
             file_hash = self.hash_file(file_path)
+            file_ext = os.path.splitext(file_path)[1]
+
+            if file_ext.lower() == ".cr2".lower():
+                with Cr2(file_path) as i:
+                    dt = i.ifd[0].find_entry('datetime').get_value()
+            else:
+                with wand.Image(filename=file_path) as i:
+                    for key, value in i.metadata.items():
+                        if key.startswith('exif:DateTime'):
+                            dt = value
+                            break
+
+            dt = datetime.strptime(dt, "%Y:%m:%d %H:%M:%S")
 
             exists = False
             for sidecar in self.sidecars:
@@ -82,10 +99,12 @@ class Library(object):
                 if copy_photos:
                     file_name = '{file_hash}{extension}'.format(
                         file_hash=file_hash,
-                        extension=os.path.splitext(file_path)[1],
+                        extension=file_ext,
                     )
-
-                    new_file_path = os.path.join(self.library_path, file_name)
+                    import_path = dt.strftime(self.import_path)
+                    if not os.path.exists(import_path):
+                        os.makedirs(import_path)
+                    new_file_path = os.path.join(import_path, file_name)
                 else:
                     new_file_path = file_path
 
