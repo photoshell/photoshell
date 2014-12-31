@@ -105,6 +105,7 @@ class PhotoImporter(Gtk.FileChooserDialog):
 
         dialog = ImportOptions(self)
         response = dialog.run()
+        opts = dialog.options
         dialog.destroy()
 
         if filename and response[0] == Gtk.ResponseType.OK:
@@ -122,7 +123,8 @@ class PhotoImporter(Gtk.FileChooserDialog):
                     GLib.idle_add(self._window.progress.set_text, photo_name)
 
                 self._window.library.import_photos(
-                    filename, notify=notify_progress, imported=imported)
+                    filename, notify=notify_progress, imported=imported,
+                    delete_originals=opts['delete_originals'])
 
                 GLib.idle_add(self._window.import_button.set_sensitive, True)
                 GLib.idle_add(

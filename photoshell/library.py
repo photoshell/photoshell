@@ -52,7 +52,8 @@ class Library(object):
             new_selection.jump(image_path)
         return new_selection
 
-    def import_photos(self, path, notify=None, imported=None):
+    def import_photos(self, path, notify=None, imported=None,
+                      delete_originals=False):
         file_list = []
 
         for root, _, files in os.walk(path):
@@ -86,6 +87,9 @@ class Library(object):
                 new_file_path = os.path.join(self.library_path, file_name)
                 if file_path != new_file_path:
                     shutil.copyfile(file_path, new_file_path)
+                    # TODO: Make sure the file copied w/o errors first?
+                    if delete_originals:
+                        os.unlink(file_path)
 
                 # develop photo
                 developed_name = '{file_hash}.{extension}'.format(
@@ -100,7 +104,7 @@ class Library(object):
                 if not os.path.isfile(developed_path):
                     # TODO: fail gracefully here (or even at startup)
                     blob = subprocess.check_output(
-                        ['dcraw', '-c', '-e', file_path])
+                        ['dcraw', '-c', '-e', new_file_path])
 
                     with wand.image.Image(blob=blob) as image:
                         with image.convert('jpeg') as developed:
