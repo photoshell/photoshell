@@ -8,7 +8,7 @@ import yaml
 
 from photoshell.image import Image
 
-raw_formats = ['CR2']
+raw_formats = ['.CR2']
 
 
 class Library(object):
@@ -26,7 +26,7 @@ class Library(object):
 
         for root, _, files in os.walk(self.library_path):
             for file_name in files:
-                if file_name.split('.')[-1] == 'yaml':
+                if os.path.splitext(file_name)[1] == '.yaml':
                     file_path = os.path.join(root, file_name)
                     with open(file_path, 'r') as sidecar:
                         self.sidecars.append(yaml.load(sidecar))
@@ -57,7 +57,7 @@ class Library(object):
 
         for root, _, files in os.walk(path):
             for file_name in files:
-                if file_name.split('.')[-1] in raw_formats:
+                if os.path.splitext(file_name)[1] in raw_formats:
                     file_path = os.path.join(root, file_name)
                     file_list.append(file_path)
 
@@ -67,7 +67,7 @@ class Library(object):
             # TODO: skip if already imported
 
             if notify:
-                notify(file_path.split('/')[-1])
+                notify(os.path.basename(file_path))
 
             file_hash = self.hash_file(file_path)
 
@@ -79,9 +79,9 @@ class Library(object):
 
             if not exists:
                 # copy file
-                file_name = '{file_hash}.{extension}'.format(
+                file_name = '{file_hash}{extension}'.format(
                     file_hash=file_hash,
-                    extension=file_path.split('/')[-1].split('.')[-1],
+                    extension=os.path.splitext(file_path)[1],
                 )
                 new_file_path = os.path.join(self.library_path, file_name)
                 if file_path != new_file_path:
