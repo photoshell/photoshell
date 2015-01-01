@@ -104,12 +104,13 @@ class Library(object):
                         original_filename=original_filename,
                         file_hash=file_hash,
                     )) + file_ext
-                    file_name = os.path.basename(new_file_path)
-                    import_path = os.path.dirname(new_file_path)
-                    if not os.path.exists(import_path):
-                        os.makedirs(import_path)
                 else:
                     new_file_path = file_path
+
+                file_name = os.path.basename(new_file_path)
+                import_path = os.path.dirname(new_file_path)
+                if not os.path.exists(import_path):
+                    os.makedirs(import_path)
 
                 if file_path != new_file_path:
                     shutil.copyfile(file_path, new_file_path)
