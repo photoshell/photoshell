@@ -26,14 +26,17 @@ class Library(object):
             os.makedirs(self.library_path)
         if not os.path.exists(self.cache_path):
             os.makedirs(self.cache_path)
+            os.makedirs(os.path.join(self.cache_path, 'tiff'))
+            os.makedirs(os.path.join(self.cache_path, 'raw'))
         self.sidecars = []
 
-        for root, _, files in os.walk(self.library_path):
+        raw_path = os.path.join(self.cache_path, 'raw')
+        for root, _, files in os.walk(raw_path):
             for file_name in files:
-                if os.path.splitext(file_name)[1] == '.yaml':
-                    file_path = os.path.join(root, file_name)
-                    with open(file_path, 'r') as sidecar:
-                        self.sidecars.append(yaml.load(sidecar))
+                file_path = os.path.join(root, file_name)
+                sidecar_path = os.path.realpath(file_path) + '.yaml'
+                with open(sidecar_path, 'r') as sidecar:
+                    self.sidecars.append(yaml.load(sidecar))
 
     def all(self):
         return self.query(lambda image: True)
@@ -114,11 +117,20 @@ class Library(object):
                 if not os.path.exists(import_path):
                     os.makedirs(import_path)
 
+                # copy photo (or don't)
                 if file_path != new_file_path:
                     shutil.copyfile(file_path, new_file_path)
                     # TODO: Make sure the file copied w/o errors first?
                     if delete_originals:
                         os.unlink(file_path)
+
+                # symlink photo
+                symlink_path = os.path.join(
+                    self.cache_path,
+                    'raw',
+                    file_hash,
+                )
+                os.symlink(new_file_path, symlink_path)
 
                 # develop photo
                 developed_name = '{file_hash}.{extension}'.format(
@@ -127,6 +139,7 @@ class Library(object):
                 )
                 developed_path = os.path.join(
                     self.cache_path,
+                    'tiff',
                     developed_name,
                 )
 
