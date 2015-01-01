@@ -31,6 +31,8 @@ class Library(object):
         self.sidecars = []
 
         raw_path = os.path.join(self.cache_path, 'raw')
+        if not os.path.exists(raw_path):
+            os.makedirs(raw_path)
         for root, _, files in os.walk(raw_path):
             for file_name in files:
                 file_path = os.path.join(root, file_name)
