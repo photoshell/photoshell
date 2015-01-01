@@ -7,8 +7,9 @@ import wand.image
 
 class Image(object):
 
-    def __init__(self, image_path):
+    def __init__(self, image_path, datetime):
         self.image_path = image_path
+        self.datetime = datetime
 
         self._width = None
         self._height = None

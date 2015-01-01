@@ -41,10 +41,12 @@ class Library(object):
     def query(self, match):
         selection = Selection(self.library_path, match)
         for sidecar in self.sidecars:
-            image = Image(sidecar['developed_path'])
+            image = Image(sidecar['developed_path'], sidecar['datetime'])
             if match(image):
                 selection.append(image)
 
+        # TODO: in place mutation is terrible
+        selection.sort(key=lambda image: image.datetime)
         return selection
 
     def update(self, selection):
@@ -228,3 +230,6 @@ class Selection(object):
     def each(self):
         for image in self.images:
             yield image
+
+    def sort(self, key):
+        self.images = sorted(self.images, key=key)
