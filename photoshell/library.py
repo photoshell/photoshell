@@ -97,14 +97,17 @@ class Library(object):
 
             if not exists:
                 if copy_photos:
-                    file_name = '{file_hash}{extension}'.format(
-                        file_hash=file_hash,
-                        extension=file_ext,
+                    original_filename = os.path.basename(
+                        os.path.splitext(file_path)[0]
                     )
-                    import_path = dt.strftime(self.import_path)
+                    new_file_path = dt.strftime(self.import_path.format(
+                        original_filename=original_filename,
+                        file_hash=file_hash,
+                    )) + file_ext
+                    file_name = os.path.basename(new_file_path)
+                    import_path = os.path.dirname(new_file_path)
                     if not os.path.exists(import_path):
                         os.makedirs(import_path)
-                    new_file_path = os.path.join(import_path, file_name)
                 else:
                     new_file_path = file_path
 
@@ -134,8 +137,8 @@ class Library(object):
                             developed.save(filename=developed_path)
 
                 # create metadata
-                meta_name = '{file_hash}.{extension}'.format(
-                    file_hash=file_hash,
+                meta_name = '{file_name}.{extension}'.format(
+                    file_name=file_name,
                     extension='yaml',
                 )
 

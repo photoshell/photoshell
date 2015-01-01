@@ -12,7 +12,8 @@ config_path = os.path.join(os.environ['HOME'], '.photoshell.yaml')
 config = dict(
     {
         'library': os.path.join(os.environ['HOME'], 'Pictures/Photoshell'),
-        'dark_theme': True
+        'dark_theme': True,
+        'import_path': '%Y-%m-%d/{original_filename}'
     }
 )
 if os.path.isfile(config_path):
