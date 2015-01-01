@@ -84,7 +84,7 @@ class Library(object):
 
             if file_ext.lower() == ".cr2".lower():
                 with Cr2(file_path) as i:
-                    dt = i.ifd[0].find_entry('datetime').get_value()
+                    dt = i.ifd[0].find_entry('datetime').value
             else:
                 with wand.Image(filename=file_path) as i:
                     for key, value in i.metadata.items():
