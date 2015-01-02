@@ -14,7 +14,12 @@ class ImportOptions(Gtk.ListBox):
         copy_photo_row = Gtk.ListBoxRow()
         copy_photo_box = Gtk.Box(
             orientation=Gtk.Orientation.HORIZONTAL, spacing=50)
-        copy_photo_label = Gtk.Label("Copy Photos to Library", xalign=0)
+        copy_photo_label = Gtk.Label(
+            "Copy Photos to Library",
+            xalign=0,
+            halign=Gtk.Align.END
+        )
+        copy_photo_label.set_halign(Gtk.Align.END)
         copy_photo_checkbox = Gtk.CheckButton()
         copy_photo_checkbox.set_active(True)
         copy_photo_box.pack_start(copy_photo_label, True, True, 0)
@@ -28,7 +33,10 @@ class ImportOptions(Gtk.ListBox):
         delete_photo_box = Gtk.Box(
             orientation=Gtk.Orientation.HORIZONTAL, spacing=50)
         delete_photo_label = Gtk.Label(
-            "Delete Originals After Import", xalign=0)
+            "Delete Originals After Import",
+            xalign=0,
+            halign=Gtk.Align.END
+        )
         self.delete_photo_checkbox = Gtk.CheckButton()
         delete_photo_box.pack_start(delete_photo_label, True, True, 0)
         delete_photo_box.pack_end(self.delete_photo_checkbox, False, True, 0)
