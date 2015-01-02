@@ -9,6 +9,7 @@ import yaml
 from datetime import datetime
 from photoshell.image import Image
 from photoshell.raw.cr2 import Cr2
+from photoshell.raw import cr2
 
 raw_formats = ['.CR2']
 
@@ -84,15 +85,21 @@ class Library(object):
             file_hash = self.hash_file(file_path)
             file_ext = os.path.splitext(file_path)[1]
 
+            metadata = {}
             if file_ext.lower() == ".cr2".lower():
                 with Cr2(file_path) as i:
-                    dt = i.ifd[0].get_value(i.ifd[0].find_entry('datetime'))
+                    for tag in cr2.tags:
+                        value = i.ifd[0].get_value(i.ifd[0].find_entry(tag))
+                        if tag == 'datetime':
+                            dt = value
+                        metadata[tag] = value
             else:
                 with wand.Image(filename=file_path) as i:
                     for key, value in i.metadata.items():
                         if key.startswith('exif:DateTime'):
                             dt = value
-                            break
+                        if key.startswith('exif:'):
+                            metadata[key] = value
 
             dt = datetime.strptime(dt, "%Y:%m:%d %H:%M:%S")
 
@@ -167,12 +174,12 @@ class Library(object):
 
                 # TODO: rename these to be sidecar instead of meta
                 if not os.path.isfile(meta_path):
-                    metadata = {
+                    metadata.update({
                         "hash": file_hash,
                         "developed_path": developed_path,
                         "original_path": new_file_path,
                         "datetime": dt,
-                    }
+                    })
 
                     with open(meta_path, 'w+') as meta_file:
                         yaml.dump(
