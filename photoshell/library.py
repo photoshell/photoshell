@@ -8,8 +8,8 @@ import yaml
 
 from datetime import datetime
 from photoshell.image import Image
-from photoshell.raw.cr2 import Cr2
-from photoshell.raw import cr2
+from rawphoto.cr2 import Cr2
+from rawphoto import cr2
 
 raw_formats = ['.CR2']
 
