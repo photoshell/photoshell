@@ -6,6 +6,8 @@ from photoshell.views.grid import Grid
 from photoshell.views.photo_import import PhotoImporter
 from photoshell.views.slideshow import Slideshow
 
+SWIPE_THRESHOLD = 500
+
 
 class Window(Gtk.Window):
 
@@ -119,6 +121,9 @@ class Window(Gtk.Window):
         self.set_default_size(800, 600)
         self.set_primary_view(primary_view)
 
+        self.swipe = Gtk.GestureSwipe.new(self)
+        self.swipe.connect('swipe', self.on_swipe)
+
         self.update_ui()
 
         # Start the GTK loop
@@ -128,11 +133,11 @@ class Window(Gtk.Window):
         self.selection = selection
         self.update_ui()
 
-    def next_photo(self, button):
+    def next_photo(self, button=None):
         self.selection.next()
         self.render_selection(self.selection)
 
-    def prev_photo(self, button):
+    def prev_photo(self, button=None):
         self.selection.prev()
         self.render_selection(self.selection)
 
@@ -174,3 +179,9 @@ class Window(Gtk.Window):
 
     def on_key_release(self, widget, ev, data=None):
         self.keyReleaseBindings.get(ev.keyval, lambda s, w: None)(self, widget)
+
+    # TODO: Percolate events down to the actual view. May require wrapping the
+    # primary layout in an EventBox?
+    def on_swipe(self, gesture, x_velocity, y_velocity):
+        if abs(x_velocity) > SWIPE_THRESHOLD:
+            self.prev_photo() if x_velocity > 0 else self.next_photo()
