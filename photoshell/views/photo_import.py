@@ -4,23 +4,12 @@ from gi.repository import GLib
 from gi.repository import Gtk
 
 
-class ImportOptions(Gtk.Dialog):
+class ImportOptions(Gtk.ListBox):
 
-    def __init__(self, window):
-        super(ImportOptions, self).__init__(
-            "Import Options",
-            window,
-            0,
-            (
-                Gtk.STOCK_CANCEL,
-                Gtk.ResponseType.CANCEL,
-                'Import',
-                Gtk.ResponseType.OK,
-            )
-        )
+    def __init__(self):
+        super(ImportOptions, self).__init__()
 
-        listbox = Gtk.ListBox()
-        listbox.set_selection_mode(Gtk.SelectionMode.NONE)
+        self.set_selection_mode(Gtk.SelectionMode.NONE)
 
         copy_photo_row = Gtk.ListBoxRow()
         copy_photo_box = Gtk.Box(
@@ -31,7 +20,7 @@ class ImportOptions(Gtk.Dialog):
         copy_photo_box.pack_start(copy_photo_label, True, True, 0)
         copy_photo_box.pack_end(copy_photo_checkbox, False, True, 0)
         copy_photo_row.add(copy_photo_box)
-        listbox.add(copy_photo_row)
+        self.add(copy_photo_row)
 
         copy_photo_checkbox.connect('toggled', self.copy_toggled)
 
@@ -44,14 +33,9 @@ class ImportOptions(Gtk.Dialog):
         delete_photo_box.pack_start(delete_photo_label, True, True, 0)
         delete_photo_box.pack_end(self.delete_photo_checkbox, False, True, 0)
         self.delete_photo_row.add(delete_photo_box)
-        listbox.add(self.delete_photo_row)
+        self.add(self.delete_photo_row)
 
         self.delete_photo_checkbox.connect('toggled', self.delete_toggled)
-
-        box = self.get_content_area()
-        box.set_spacing(3)
-        box.pack_start(listbox, True, True, 0)
-        box.show_all()
 
         self.options = {
             'copy_photos': True,
@@ -93,6 +77,13 @@ class PhotoImporter(Gtk.FileChooserDialog):
             ),
         )
 
+        options_box = ImportOptions()
+        self.options = options_box.options
+        box = self.get_content_area()
+        box.set_spacing(3)
+        box.pack_start(options_box, True, True, 0)
+        box.show_all()
+
         self._window = window
 
     def import_photos(self):
@@ -103,12 +94,7 @@ class PhotoImporter(Gtk.FileChooserDialog):
         else:
             filename = None
 
-        dialog = ImportOptions(self)
-        response = dialog.run()
-        opts = dialog.options
-        dialog.destroy()
-
-        if filename and response[0] == Gtk.ResponseType.OK:
+        if filename and response == Gtk.ResponseType.OK:
             def do_import():
                 GLib.idle_add(self._window.import_button.set_sensitive, False)
                 GLib.idle_add(self._window.progress.set_fraction, 0)
@@ -124,8 +110,8 @@ class PhotoImporter(Gtk.FileChooserDialog):
 
                 self._window.library.import_photos(
                     filename, notify=notify_progress, imported=imported,
-                    copy_photos=opts['copy_photos'],
-                    delete_originals=opts['delete_originals'])
+                    copy_photos=self.options['copy_photos'],
+                    delete_originals=self.options['delete_originals'])
 
                 GLib.idle_add(self._window.import_button.set_sensitive, True)
                 GLib.idle_add(
