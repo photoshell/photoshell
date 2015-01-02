@@ -86,15 +86,16 @@ class Library(object):
             file_ext = os.path.splitext(file_path)[1]
 
             metadata = {}
-            if file_ext.lower() == ".cr2".lower():
-                with Cr2(file_path) as i:
+            with open(file_path, 'rb') as file:
+                if file_ext.lower() == ".cr2".lower():
+                    i = Cr2(file=file)
                     for tag in cr2.tags:
                         value = i.ifd[0].get_value(i.ifd[0].find_entry(tag))
                         if tag == 'datetime':
                             dt = value
                         metadata[tag] = value
-            else:
-                with wand.Image(filename=file_path) as i:
+                else:
+                    i = wand.Image(file=file)
                     for key, value in i.metadata.items():
                         if key.startswith('exif:DateTime'):
                             dt = value
