@@ -36,3 +36,8 @@ clean:
 	find . -iname '*.pyc' | xargs rm -f
 	rm -rf .tox
 	rm -rf $(VENV)
+	$(MAKE) -C art $@
+
+.PHONY: art
+art:
+	$(MAKE) -C $@
