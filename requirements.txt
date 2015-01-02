@@ -1,3 +1,3 @@
 Wand
 pyyaml
-rawphoto
+-e git://github.com/photoshell/rawphoto.git#egg=photoshell
