@@ -28,4 +28,4 @@ logo_xsmall.png: logo.svg
 
 .PHONY: clean
 clean:
-	rm *.png
+	rm -f *.png
