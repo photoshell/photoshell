@@ -129,10 +129,13 @@ class Library(object):
 
                 # copy photo (or don't)
                 if file_path != new_file_path:
-                    shutil.copyfile(file_path, new_file_path)
-                    # TODO: Make sure the file copied w/o errors first?
-                    if delete_originals:
-                        os.unlink(file_path)
+                    try:
+                        shutil.copyfile(file_path, new_file_path)
+                        # TODO: Make sure the file copied w/o errors first?
+                        if delete_originals:
+                            os.unlink(file_path)
+                    except:
+                        pass
 
                 # symlink photo
                 symlink_path = os.path.join(
@@ -179,10 +182,13 @@ class Library(object):
                         meta_name
                     )
                     if os.path.exists(existing_meta_path) and existing_meta_path != meta_path:
-                        shutil.copyfile(existing_meta_path, meta_path)
-                        # TODO: Make sure the file copied w/o errors first?
-                        if delete_originals:
-                            os.unlink(existing_meta_path)
+                        try:
+                            shutil.copyfile(existing_meta_path, meta_path)
+                            # TODO: Make sure the file copied w/o errors first?
+                            if delete_originals:
+                                os.unlink(existing_meta_path)
+                        except:
+                            pass
 
                 # TODO: rename these to be sidecar instead of meta
                 metadata.update({
