@@ -172,21 +172,33 @@ class Library(object):
                     meta_name,
                 )
 
-                # TODO: rename these to be sidecar instead of meta
-                if not os.path.isfile(meta_path):
-                    metadata.update({
-                        "hash": file_hash,
-                        "developed_path": developed_path,
-                        "original_path": new_file_path,
-                        "datetime": dt,
-                    })
+                if file_path != new_file_path:
+                    existing_meta_path = os.path.join(
+                        os.path.dirname(file_path),
+                        meta_name
+                    )
+                    if os.path.exists(existing_meta_path) and existing_meta_path != meta_path:
+                        shutil.copyfile(existing_meta_path, meta_path)
+                        # TODO: Make sure the file copied w/o errors first?
+                        if delete_originals:
+                            os.unlink(existing_meta_path)
 
+                # TODO: rename these to be sidecar instead of meta
+                metadata.update({
+                    "hash": file_hash,
+                    "developed_path": developed_path,
+                    "original_path": new_file_path,
+                    "datetime": dt,
+                })
+                if not os.path.isfile(meta_path):
                     with open(meta_path, 'w+') as meta_file:
                         yaml.dump(
                             metadata, meta_file, default_flow_style=False)
                 else:
                     with open(meta_path, 'r') as meta_file:
-                        metadata = yaml.load(meta_file)
+                        existing_metadata = yaml.load(meta_file)
+                        existing_metadata.update(metadata)
+                        metadata = existing_metadata
 
                 self.sidecars.append(metadata)
 
