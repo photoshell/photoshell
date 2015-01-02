@@ -1,6 +1,6 @@
 [![Build status](https://api.travis-ci.org/photoshell/photoshell.svg?branch=master)](https://travis-ci.org/photoshell/photoshell)
 
-# ph.sh (photoshell)
+# photoshell
 
 A GTK3 application for managing photos.
 
