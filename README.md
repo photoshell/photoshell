@@ -1,4 +1,4 @@
-[![Build status](https://api.travis-ci.org/SamWhited/ph.sh.svg?branch=master)](https://travis-ci.org/SamWhited/ph.sh)
+[![Build status](https://api.travis-ci.org/photoshell/photoshell.svg?branch=master)](https://travis-ci.org/photoshell/photoshell)
 
 # ph.sh (photoshell)
 
