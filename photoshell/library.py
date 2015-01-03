@@ -1,17 +1,11 @@
-import hashlib
 import os
-import shutil
-import subprocess
 
-import wand.image
-import yaml
-
-from datetime import datetime
 from photoshell.image import Image
-from rawphoto.cr2 import Cr2
-from rawphoto import cr2
+from photoshell.photo import Photo
 
-raw_formats = ['.CR2']
+from photoshell import raw
+from photoshell.util import hash_file
+from photoshell.util import Progress
 
 
 class Library(object):
@@ -20,8 +14,8 @@ class Library(object):
         super(Library, self).__init__()
 
         self.library_path = config['library']
-        self.import_path = os.path.join(self.library_path,
-                                        config['import_path'])
+        self.import_string = os.path.join(self.library_path,
+                                          config['import_path'])
         self.cache_path = os.path.join(self.library_path, '.cache')
         if not os.path.exists(self.library_path):
             os.makedirs(self.library_path)
@@ -37,9 +31,7 @@ class Library(object):
         for root, _, files in os.walk(raw_path):
             for file_name in files:
                 file_path = os.path.join(root, file_name)
-                sidecar_path = os.path.realpath(file_path) + '.yaml'
-                with open(sidecar_path, 'r') as sidecar:
-                    self.sidecars.append(yaml.load(sidecar))
+                self.sidecars.append(Photo.load(os.path.realpath(file_path)))
 
     def all(self):
         return self.query(lambda image: True)
@@ -47,7 +39,7 @@ class Library(object):
     def query(self, match):
         selection = Selection(self.library_path, match)
         for sidecar in self.sidecars:
-            image = Image(sidecar['developed_path'], sidecar['datetime'])
+            image = Image(sidecar.developed_path, sidecar.datetime)
             if match(image):
                 selection.append(image)
 
@@ -64,171 +56,76 @@ class Library(object):
             new_selection.jump(image_path)
         return new_selection
 
-    def import_photos(self, path, notify=None, imported=None,
+    def exists(self, photo):
+        return not filter(
+            lambda s: s.file_hash == photo.file_hash,
+            self.sidecars
+        )
+
+    def add(self, photo):
+        self.sidecars.append(photo)
+
+    def import_path(self, photo):
+        file_name, file_ext = os.path.splitext(
+            os.path.basename(photo.raw_path))
+
+        import_path = photo.datetime.strftime(self.import_string.format(
+            original_filename=file_name,
+            file_hash=photo.file_hash,
+        )) + file_ext
+
+        # TODO: directory creation should live elsewhere
+        import_dir = os.path.dirname(import_path)
+        if not os.path.exists(import_dir):
+            os.makedirs(import_dir)
+
+        return import_path
+
+    def import_photos(self, path, notify_callback=None, imported_callback=None,
                       copy_photos=True, delete_originals=False):
-        file_list = []
 
-        for root, _, files in os.walk(path):
-            for file_name in files:
-                if os.path.splitext(file_name)[1] in raw_formats:
-                    file_path = os.path.join(root, file_name)
-                    file_list.append(file_path)
+        photo_list = self.discover(path)
+        progress = Progress(len(photo_list))
 
-        num_complete = 0
+        for photo in photo_list:
+            if notify_callback:
+                notify_callback(os.path.basename(photo.raw_path))
 
-        for file_path in file_list:
-            # TODO: skip if already imported
+            # Maybe copy the photo
+            if copy_photos:
+                photo = photo.copy(
+                    self.import_path(photo), delete_originals=delete_originals)
 
-            if notify:
-                notify(os.path.basename(file_path))
+            # Develop the photo
+            photo = photo.develop(
+                write_sidecar=True,
+                cache_path=self.cache_path,
+            )
 
-            file_hash = self.hash_file(file_path)
-            file_ext = os.path.splitext(file_path)[1]
+            # Add symlink to cache
+            symlink_path = os.path.join(
+                self.cache_path,
+                'raw',
+                photo.file_hash,
+            )
+            os.symlink(photo.raw_path, symlink_path)
 
-            metadata = {}
-            with open(file_path, 'rb') as file:
-                if file_ext.lower() == ".cr2".lower():
-                    i = Cr2(file=file)
-                    for tag in cr2.tags:
-                        e = i.ifd[0].find_entry(tag)
-                        print(e)
-                        if e != None:
-                            value = i.ifd[0].get_value(e)
-                        if tag == 'datetime':
-                            dt = value
-                        metadata[tag] = value
-                else:
-                    i = wand.Image(file=file)
-                    for key, value in i.metadata.items():
-                        if key.startswith('exif:DateTime'):
-                            dt = value
-                        if key.startswith('exif:'):
-                            metadata[key] = value
+            # Add photo to library
+            self.add(photo)
 
-            dt = datetime.strptime(dt, "%Y:%m:%d %H:%M:%S")
+            if imported_callback:
+                imported_callback(photo.file_hash, progress.advance())
 
-            exists = False
-            for sidecar in self.sidecars:
-                if sidecar['hash'] == file_hash:
-                    exists = True
-                    break
+    def discover(self, path):
+        photo_list = []
 
-            if not exists:
-                if copy_photos:
-                    original_filename = os.path.basename(
-                        os.path.splitext(file_path)[0]
-                    )
-                    new_file_path = dt.strftime(self.import_path.format(
-                        original_filename=original_filename,
-                        file_hash=file_hash,
-                    )) + file_ext
-                else:
-                    new_file_path = file_path
+        for photo_path in raw.discover(path):
+            photo = Photo.load(photo_path, hash_file(photo_path))
 
-                file_name = os.path.basename(new_file_path)
-                import_path = os.path.dirname(new_file_path)
-                if not os.path.exists(import_path):
-                    os.makedirs(import_path)
+            if not self.exists(photo):
+                photo_list.append(photo)
 
-                # copy photo (or don't)
-                if file_path != new_file_path:
-                    try:
-                        shutil.copyfile(file_path, new_file_path)
-                        # TODO: Make sure the file copied w/o errors first?
-                        if delete_originals:
-                            os.unlink(file_path)
-                    except:
-                        pass
-
-                # symlink photo
-                symlink_path = os.path.join(
-                    self.cache_path,
-                    'raw',
-                    file_hash,
-                )
-                os.symlink(new_file_path, symlink_path)
-
-                # develop photo
-                developed_name = '{file_hash}.{extension}'.format(
-                    file_hash=file_hash,
-                    extension='tiff',
-                )
-                developed_path = os.path.join(
-                    self.cache_path,
-                    'tiff',
-                    developed_name,
-                )
-
-                if not os.path.isfile(developed_path):
-                    # TODO: fail gracefully here (or even at startup)
-                    blob = subprocess.check_output(
-                        ['dcraw', '-c', '-e', new_file_path])
-
-                    with wand.image.Image(blob=blob) as image:
-                        with image.convert('jpeg') as developed:
-                            developed.save(filename=developed_path)
-
-                # create metadata
-                meta_name = '{file_name}.{extension}'.format(
-                    file_name=file_name,
-                    extension='yaml',
-                )
-
-                meta_path = os.path.join(
-                    import_path,
-                    meta_name,
-                )
-
-                if file_path != new_file_path:
-                    existing_meta_path = os.path.join(
-                        os.path.dirname(file_path),
-                        meta_name
-                    )
-                    if os.path.exists(existing_meta_path) and existing_meta_path != meta_path:
-                        try:
-                            shutil.copyfile(existing_meta_path, meta_path)
-                            # TODO: Make sure the file copied w/o errors first?
-                            if delete_originals:
-                                os.unlink(existing_meta_path)
-                        except:
-                            pass
-
-                # TODO: rename these to be sidecar instead of meta
-                metadata.update({
-                    "hash": file_hash,
-                    "developed_path": developed_path,
-                    "original_path": new_file_path,
-                    "datetime": dt,
-                })
-                if not os.path.isfile(meta_path):
-                    with open(meta_path, 'w+') as meta_file:
-                        yaml.dump(
-                            metadata, meta_file, default_flow_style=False)
-                else:
-                    with open(meta_path, 'r') as meta_file:
-                        existing_metadata = yaml.load(meta_file)
-                        existing_metadata.update(metadata)
-                        metadata = existing_metadata
-
-                self.sidecars.append(metadata)
-
-            num_complete += 1
-
-            if imported:
-                imported(file_hash, num_complete / len(file_list))
-
-    # TODO: this shouldn't live on self
-    def hash_file(self, file_path):
-        hash = hashlib.sha1()
-
-        # TODO: probably block size or something, although if your machine
-        # can't hold the whole file in memory you probably can't edit it
-        # anyway.
-        with open(file_path, 'rb') as f:
-            data = f.read()
-
-        hash.update(data)
-        return hash.hexdigest()
+        return photo_list
 
 
 class Selection(object):

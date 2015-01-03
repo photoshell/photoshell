@@ -117,16 +117,19 @@ class PhotoImporter(Gtk.FileChooserDialog):
                     GLib.idle_add(self._window.progress.set_text, photo_name)
 
                 self._window.library.import_photos(
-                    filename, notify=notify_progress, imported=imported,
+                    filename, notify_callback=notify_progress,
+                    imported_callback=imported,
                     copy_photos=self.options['copy_photos'],
                     delete_originals=self.options['delete_originals'])
 
                 GLib.idle_add(self._window.import_button.set_sensitive, True)
                 GLib.idle_add(
                     self._window.header_bar.remove, self._window.progress)
-                GLib.idle_add(self._window.render_selection, self._window.library.update(
-                    self._window.selection
-                ))
+                GLib.idle_add(
+                    self._window.render_selection, self._window.library.update(
+                        self._window.selection
+                    )
+                )
 
             thread = threading.Thread(target=do_import)
             thread.daemon = True
