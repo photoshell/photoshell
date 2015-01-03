@@ -1,6 +1,7 @@
 from gi.repository import Gio
 from gi.repository import Gtk
 from gi.repository import Gdk
+from gi.repository import GdkPixbuf
 
 from photoshell.views.grid import Grid
 from photoshell.views.photo_import import PhotoImporter
@@ -13,6 +14,15 @@ class Window(Gtk.Window):
 
     def __init__(self, config, library, primary_view):
         super(Window, self).__init__()
+
+        Gtk.Window.set_default_icon_list((
+            GdkPixbuf.Pixbuf.new_from_file("art/logo_xlarge.png"),
+            GdkPixbuf.Pixbuf.new_from_file("art/logo_large.png"),
+            GdkPixbuf.Pixbuf.new_from_file("art/logo_medium.png"),
+            GdkPixbuf.Pixbuf.new_from_file("art/logo_small.png"),
+            GdkPixbuf.Pixbuf.new_from_file("art/logo_xsmall.png"),
+            GdkPixbuf.Pixbuf.new_from_file("art/logo_gnome.png")
+        ))
 
         self.keyReleaseBindings = {
             Gdk.KEY_Left: lambda self, button: self.prev_photo(button),

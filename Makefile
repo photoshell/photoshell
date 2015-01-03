@@ -25,7 +25,7 @@ test: $(VENV)
 	$(ACTIVATE); tox $(REBUILD_FLAG)
 
 .PHONY: build
-build: pre-commit
+build: pre-commit art
 
 .PHONY: run
 run: build $(VENV)
