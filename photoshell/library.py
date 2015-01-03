@@ -90,7 +90,10 @@ class Library(object):
                 if file_ext.lower() == ".cr2".lower():
                     i = Cr2(file=file)
                     for tag in cr2.tags:
-                        value = i.ifd[0].get_value(i.ifd[0].find_entry(tag))
+                        e = i.ifd[0].find_entry(tag)
+                        print(e)
+                        if e != None:
+                            value = i.ifd[0].get_value(e)
                         if tag == 'datetime':
                             dt = value
                         metadata[tag] = value
