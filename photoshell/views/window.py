@@ -168,6 +168,7 @@ class Window(Gtk.Window):
             self.remove(self.primary_view)
         self.primary_view = view
 
+        self.header_bar.props.subtitle = view.__class__.__name__
         self.add(self.primary_view)
         self.primary_view.render_selection(self.selection)
         self.show_all()
