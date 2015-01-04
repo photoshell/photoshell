@@ -89,14 +89,12 @@ class Library(object):
             with open(file_path, 'rb') as file:
                 if file_ext.lower() == ".cr2".lower():
                     i = Cr2(file=file)
-                    for tag in cr2.tags:
-                        e = i.ifd[0].find_entry(tag)
-                        print(e)
-                        if e != None:
-                            value = i.ifd[0].get_value(e)
-                        if tag == 'datetime':
+                    for tag_name in i.ifds[0].entries:
+                        e = i.ifds[0].entries[tag_name]
+                        value = i.ifds[0].get_value(e)
+                        if tag_name == 'datetime':
                             dt = value
-                        metadata[tag] = value
+                        metadata[tag_name] = value
                 else:
                     i = wand.Image(file=file)
                     for key, value in i.metadata.items():
