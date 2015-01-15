@@ -109,3 +109,6 @@ class Photo(_Photo):
                     tuple_to_dict(photo), meta_file, default_flow_style=False)
 
         return photo
+
+    def __eq__(self, other):
+        return self.file_hash == other.file_hash
