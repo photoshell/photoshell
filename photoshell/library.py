@@ -57,7 +57,7 @@ class Library(object):
 
     def exists(self, photo):
         for sidecar in self.sidecars:
-            if photo.file_hash == sidecar.file_hash:
+            if photo == sidecar:
                 return True
         return False
 
