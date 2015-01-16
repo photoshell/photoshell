@@ -105,6 +105,7 @@ class PhotoImporter(Gtk.FileChooserDialog):
         if filename and response == Gtk.ResponseType.OK:
             def do_import():
                 GLib.idle_add(self._window.import_button.set_sensitive, False)
+                GLib.idle_add(self._window.export_button.set_sensitive, False)
                 GLib.idle_add(self._window.progress.set_fraction, 0)
                 GLib.idle_add(
                     self._window.header_bar.pack_start, self._window.progress)
@@ -123,6 +124,7 @@ class PhotoImporter(Gtk.FileChooserDialog):
                     delete_originals=self.options['delete_originals'])
 
                 GLib.idle_add(self._window.import_button.set_sensitive, True)
+                GLib.idle_add(self._window.export_button.set_sensitive, True)
                 GLib.idle_add(
                     self._window.header_bar.remove, self._window.progress)
                 GLib.idle_add(
