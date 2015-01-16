@@ -45,7 +45,6 @@ class Window(Gtk.Window):
         # Create Header
         self.header_bar = Gtk.HeaderBar()
         self.header_bar.set_show_close_button(True)
-        self.header_bar.props.title = 'PhotoShell'
 
         # Create navigation box
         navigation_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
@@ -117,24 +116,18 @@ class Window(Gtk.Window):
 
         slideshow_button = Gtk.RadioButton()
         slideshow_button.set_property('draw-indicator', False)
-        slideshow_icon = Gio.ThemedIcon(name="view-paged-symbolic")
-        slideshow_image = Gtk.Image.new_from_gicon(
-            slideshow_icon, Gtk.IconSize.BUTTON)
-        slideshow_button.add(slideshow_image)
-        view_box.add(slideshow_button)
+        slideshow_button.add(Gtk.Label('Slideshow'))
         slideshow_button.connect('clicked', self.slideshow_view)
 
         grid_button = Gtk.RadioButton.new_from_widget(slideshow_button)
         grid_button.set_property('draw-indicator', False)
-        grid_icon = Gio.ThemedIcon(name="view-grid-symbolic")
-        grid_image = Gtk.Image.new_from_gicon(
-            grid_icon, Gtk.IconSize.BUTTON)
-        grid_button.add(grid_image)
+        grid_button.add(Gtk.Label('Grid'))
         grid_button.connect('clicked', self.grid_view)
 
         view_box.add(grid_button)
-
-        self.header_bar.pack_end(view_box)
+        view_box.add(slideshow_button)
+        view_box.set_homogeneous(True)
+        self.header_bar.set_custom_title(view_box)
 
         # Setup Window
         self.set_wmclass("PhotoShell", "PhotoShell")
@@ -181,7 +174,6 @@ class Window(Gtk.Window):
             self.remove(self.primary_view)
         self.primary_view = view
 
-        self.header_bar.props.subtitle = view.__class__.__name__
         self.add(self.primary_view)
         self.primary_view.render_selection(self.selection)
         self.show_all()
