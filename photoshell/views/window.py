@@ -4,6 +4,7 @@ from gi.repository import Gdk
 from gi.repository import GdkPixbuf
 
 from photoshell.views.grid import Grid
+from photoshell.views.photo_exporter import PhotoExporter
 from photoshell.views.photo_import import PhotoImporter
 from photoshell.views.slideshow import Slideshow
 
@@ -38,7 +39,7 @@ class Window(Gtk.Window):
 
         # Use Dark Theme
         settings = Gtk.Settings.get_default()
-        if 'dark_theme' in config and config['dark_theme'] == True:
+        if 'dark_theme' in config and config['dark_theme'] is True:
             settings.set_property('gtk-application-prefer-dark-theme', True)
 
         # Create Header
@@ -77,6 +78,16 @@ class Window(Gtk.Window):
 
         self.header_bar.pack_start(self.import_button)
 
+        # Create import button
+        self.export_button = Gtk.Button()
+        export_icon = Gio.ThemedIcon(name="document-save-symbolic")
+        export_image = Gtk.Image.new_from_gicon(
+            export_icon, Gtk.IconSize.BUTTON)
+        self.export_button.connect('clicked', self.export_photo)
+        self.export_button.add(export_image)
+
+        self.header_bar.pack_start(self.export_button)
+
         self.progress = Gtk.ProgressBar()
         self.progress.set_text('Importing...')
         self.progress.set_show_text(True)
@@ -87,7 +98,8 @@ class Window(Gtk.Window):
         settings_image = Gtk.Image.new_from_gicon(
             settings_icon, Gtk.IconSize.BUTTON)
         settings_button.add(settings_image)
-        self.header_bar.pack_end(settings_button)
+        # TODO: add this back when it works
+        # self.header_bar.pack_end(settings_button)
 
         # Create terminal button
         terminal_button = Gtk.Button()
@@ -95,7 +107,8 @@ class Window(Gtk.Window):
         terminal_image = Gtk.Image.new_from_gicon(
             terminal_icon, Gtk.IconSize.BUTTON)
         terminal_button.add(terminal_image)
-        self.header_bar.pack_end(terminal_button)
+        # TODO: add this back when it works
+        # self.header_bar.pack_end(terminal_button)
 
         # Create view box
         view_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
@@ -187,6 +200,9 @@ class Window(Gtk.Window):
 
     def import_folder(self, button):
         PhotoImporter(self).import_photos()
+
+    def export_photo(self, button):
+        PhotoExporter(self).export_photo(self.selection.current())
 
     def on_key_release(self, widget, ev, data=None):
         self.keyReleaseBindings.get(ev.keyval, lambda s, w: None)(self, widget)
