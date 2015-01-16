@@ -74,16 +74,20 @@ class Photo(_Photo):
         return dict_to_tuple(Photo, photo_dict)
 
     def develop(self, write_sidecar=False, cache_path=None):
-        # develop photo
-        developed_name = '{file_hash}.{extension}'.format(
-            file_hash=self.file_hash,
-            extension='tiff',
-        )
-        developed_path = os.path.join(
-            cache_path,
-            'tiff',
-            developed_name,
-        )
+        # develop photow
+        if os.path.splitext(self.raw_path)[-1].upper() in raw.common_formats:
+            developed_path = self.raw_path
+        else:
+            developed_name = '{file_hash}.{extension}'.format(
+                file_hash=self.file_hash,
+                extension='tiff',
+            )
+
+            developed_path = os.path.join(
+                cache_path,
+                'tiff',
+                developed_name,
+            )
 
         if not os.path.isfile(developed_path):
             # TODO: fail gracefully here (or even at startup)
