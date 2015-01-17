@@ -83,10 +83,10 @@ class Library(object):
     def import_photos(self, path, notify_callback=None, imported_callback=None,
                       copy_photos=True, delete_originals=False):
 
-        photo_list = self.discover(path)
-        progress = Progress(len(photo_list))
+        photo_count, photo_iterator = self.discover(path)
+        progress = Progress(photo_count)
 
-        for photo in photo_list:
+        for photo in photo_iterator():
             if notify_callback:
                 notify_callback(os.path.basename(photo.raw_path))
 
@@ -116,12 +116,13 @@ class Library(object):
                 imported_callback(photo.file_hash, progress.advance())
 
     def discover(self, path):
-        photo_list = []
+        photo_list = raw.discover(path)
 
-        for photo_path in raw.discover(path):
-            photo = Photo.load(photo_path, hash_file(photo_path))
+        def photo_iterator():
+            for photo_path in photo_list:
+                photo = Photo.load(photo_path, hash_file(photo_path))
 
-            if not self.exists(photo):
-                photo_list.append(photo)
+                if not self.exists(photo):
+                    yield photo
 
-        return photo_list
+        return len(photo_list), photo_iterator
