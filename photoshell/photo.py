@@ -34,9 +34,19 @@ _Photo = namedtuple('Photo', [
 
 class Photo(_Photo):
 
-    def gtk_image(self, base_path, max_width, max_height):
+    # TODO: move this off the class
+    def gtk_image(self, base_path, max_width=1280, max_height=1024):
         from photoshell.image import Image
         return Image(self.developed_path, self.datetime).load_preview(
+            base_path,
+            max_width=max_width,
+            max_height=max_height,
+        )
+
+    # TODO: move this off the class
+    def gtk_pixbuf(self, base_path, max_width=1280, max_height=1024):
+        from photoshell.image import Image
+        return Image(self.developed_path, self.datetime).load_pixbuf(
             base_path,
             max_width=max_width,
             max_height=max_height,
