@@ -16,4 +16,5 @@ c = Config({
 # Open photo viewer
 library = Library(c)
 Window(c, library, Slideshow())
-c.flush()
+if c.exists():
+    c.flush()
