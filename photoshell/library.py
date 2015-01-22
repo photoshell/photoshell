@@ -117,12 +117,16 @@ class Library(object):
 
     def discover(self, path):
         photo_list = raw.discover(path)
+        new_list = []
+
+        for photo_path in photo_list:
+            photo = Photo.load(photo_path, hash_file(photo_path))
+
+            if not self.exists(photo):
+                new_list.append(photo)
 
         def photo_iterator():
-            for photo_path in photo_list:
-                photo = Photo.load(photo_path, hash_file(photo_path))
+            for photo in new_list:
+                yield photo
 
-                if not self.exists(photo):
-                    yield photo
-
-        return len(photo_list), photo_iterator
+        return len(new_list), photo_iterator
