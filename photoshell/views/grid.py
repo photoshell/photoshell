@@ -8,6 +8,13 @@ THUMB_WIDTH = 256
 THUMB_HEIGHT = 256
 
 
+class PhotoBox(Gtk.Box):
+
+    def __init__(self, photo):
+        super(PhotoBox, self).__init__()
+        self.photo = photo
+
+
 class Grid(Gtk.ScrolledWindow):
 
     def __init__(self):
@@ -21,21 +28,25 @@ class Grid(Gtk.ScrolledWindow):
         self.flowbox = Gtk.FlowBox()
         self.get_children()[0].add(self.flowbox)
 
-        photos = []
+        photo_boxes = []
 
-        for image in selection.each():
-            box = Gtk.Box()
+        for photo in selection.each_photo():
+            box = PhotoBox(photo)
             box.set_size_request(THUMB_WIDTH, THUMB_HEIGHT)
             self.flowbox.add(box)
-            photos.append((image, box))
+            photo_boxes.append(box)
 
         self.show_all()
 
         def load_thumbnails():
-            for photo, box in photos:
-                GLib.idle_add(box.set_center_widget, photo.load_preview(
-                    selection.library_path, THUMB_HEIGHT, THUMB_HEIGHT))
-                GLib.idle_add(box.show_all)
+            for photo_box in photo_boxes:
+                gtk_image = photo_box.photo.gtk_image(
+                    selection.library_path,
+                    THUMB_WIDTH,
+                    THUMB_HEIGHT,
+                )
+                GLib.idle_add(photo_box.set_center_widget, gtk_image)
+                GLib.idle_add(photo_box.show_all)
 
         load_thread = threading.Thread(target=load_thumbnails)
         load_thread.daemon = True

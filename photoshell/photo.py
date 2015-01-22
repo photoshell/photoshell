@@ -34,6 +34,14 @@ _Photo = namedtuple('Photo', [
 
 class Photo(_Photo):
 
+    def gtk_image(self, base_path, max_width, max_height):
+        from photoshell.image import Image
+        return Image(self.developed_path, self.datetime).load_preview(
+            base_path,
+            max_width=max_width,
+            max_height=max_height,
+        )
+
     @classmethod
     def load(cls, photo_path, file_hash=None):
         sidecar_path = photo_path + '.yaml'
