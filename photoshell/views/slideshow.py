@@ -15,14 +15,14 @@ class Slideshow(Gtk.Box):
     def render_selection(self, selection):
         self.mutex.acquire()
 
-        new_image = selection.current()
+        new_photo = selection.current_photo()
 
-        if new_image:
+        if new_photo:
             # TODO: image path is bad criteria for redrawing if we re-develop
-            if self.image_path != new_image.image_path:
+            if self.image_path != new_photo.raw_path:
                 self.image.set_from_pixbuf(
-                    new_image.load_pixbuf(selection.library_path),
+                    new_photo.gtk_pixbuf(selection.library_path),
                 )
-                self.image_path = new_image.image_path
+                self.image_path = new_photo.raw_path
 
         self.mutex.release()

@@ -8,6 +8,7 @@ class Selection(object):
         self.library_path = library_path
         self.query = query
         self.images = []
+        self.photos = []
         self.current_image = 0
 
     def append(self, sidecar):
@@ -17,10 +18,17 @@ class Selection(object):
         from photoshell.image import Image
         image = Image(sidecar.developed_path, sidecar.datetime)
         self.images.append(image)
+        self.photos.append(sidecar)
 
     def current(self):
         if len(self.images):
             return self.images[self.current_image]
+        else:
+            return None
+
+    def current_photo(self):
+        if len(self.photos):
+            return self.photos[self.current_image]
         else:
             return None
 
@@ -48,6 +56,10 @@ class Selection(object):
     def each(self):
         for image in self.images:
             yield image
+
+    def each_photo(self):
+        for photo in self.photos:
+            yield photo
 
     def sort(self, key):
         self.images = sorted(self.images, key=key)

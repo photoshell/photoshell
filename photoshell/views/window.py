@@ -34,6 +34,9 @@ class Window(Gtk.Window):
         self.primary_view = None
         self.selection = library.all()
 
+        self.slideshow = None
+        self.grid = None
+
         # Setup keyboard bindings
         self.connect("key-release-event", self.on_key_release)
 
@@ -161,13 +164,19 @@ class Window(Gtk.Window):
         if type(self.primary_view) == Slideshow:
             return
 
-        self.set_primary_view(Slideshow())
+        if not self.slideshow:
+            self.slideshow = Slideshow()
+
+        self.set_primary_view(self.slideshow)
 
     def grid_view(self, button):
         if type(self.primary_view) == Grid:
             return
 
-        self.set_primary_view(Grid())
+        if not self.grid:
+            self.grid = Grid()
+
+        self.set_primary_view(self.grid)
 
     def set_primary_view(self, view):
         if self.primary_view:
