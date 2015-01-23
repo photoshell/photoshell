@@ -2,10 +2,10 @@ import os
 
 from photoshell.photo import Photo
 
-from photoshell import raw
 from photoshell.selection import Selection
 from photoshell.util import hash_file
 from photoshell.util import Progress
+from rawphoto import raw
 
 
 class Library(object):
