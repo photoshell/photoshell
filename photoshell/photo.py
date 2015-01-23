@@ -7,10 +7,12 @@ import subprocess
 import wand.image
 import yaml
 
-from photoshell import raw
 from photoshell.util import dict_to_tuple
 from photoshell.util import tuple_to_dict
+from rawphoto.raw import Raw
 
+
+common_formats = ['.PNG', '.JPG', '.JPEG']
 
 _Photo = namedtuple('Photo', [
     'aperture',
@@ -60,7 +62,8 @@ class Photo(_Photo):
             with open(sidecar_path, 'r') as sidecar:
                 metadata = yaml.load(sidecar)
         else:
-            metadata = raw.read_meta(photo_path, file_hash)
+            with Raw(filename=photo_path) as raw:
+                metadata = raw.metadata
 
         # Don't trust the metadata; always use our own path and hash.
         metadata['raw_path'] = photo_path
@@ -96,7 +99,7 @@ class Photo(_Photo):
 
     def develop(self, write_sidecar=False, cache_path=None):
         # develop photow
-        if os.path.splitext(self.raw_path)[-1].upper() in raw.common_formats:
+        if os.path.splitext(self.raw_path)[-1].upper() in common_formats:
             developed_path = self.raw_path
         else:
             developed_name = '{file_hash}.{extension}'.format(
