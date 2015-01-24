@@ -36,4 +36,7 @@ class Progress(object):
 
     def advance(self):
         self.num_complete += 1
+        return self.percent()
+
+    def percent(self):
         return self.num_complete / self.num_to_complete

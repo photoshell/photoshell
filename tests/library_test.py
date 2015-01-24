@@ -65,7 +65,7 @@ def test_discover(config, source_dir):
     library = Library(config)
 
     with mock.patch.object(Photo, 'load', create_photo):
-        photo_count, photo_iterator = library.discover(source_dir.strpath)
+        progress, photo_iterator = library.discover(source_dir.strpath)
         photo_list = [photo for photo in photo_iterator()]
 
         # Make sure all the RAW files are accounted for.
@@ -77,6 +77,6 @@ def test_discover(config, source_dir):
         library.add(photo_list[0])
 
         # And make sure the added file isn't discovered a second time.
-        photo_count, photo_iterator = library.discover(source_dir.strpath)
-        assert photo_count == 2
+        progress, photo_iterator = library.discover(source_dir.strpath)
+        assert len([p for p in photo_iterator()]) == 2
         assert [photo for photo in photo_iterator()] == photo_list[1:]

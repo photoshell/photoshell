@@ -3,7 +3,6 @@ from datetime import datetime
 import os
 import shutil
 
-import wand.image
 import yaml
 
 from photoshell.util import dict_to_tuple
@@ -103,21 +102,20 @@ class Photo(_Photo):
         else:
             developed_name = '{file_hash}.{extension}'.format(
                 file_hash=self.file_hash,
-                extension='tiff',
+                extension='jpg',
             )
 
             developed_path = os.path.join(
                 cache_path,
-                'tiff',
+                'jpg',
                 developed_name,
             )
 
         if not os.path.isfile(developed_path):
             blob = Raw(filename=self.raw_path).fhandle.get_quarter_size_rgb()
 
-            with wand.image.Image(blob=blob) as image:
-                with image.convert('jpeg') as developed:
-                    developed.save(filename=developed_path)
+            with open(developed_path, 'wb') as f:
+                f.write(blob)
 
         photo_dict = tuple_to_dict(self)
         photo_dict['developed_path'] = developed_path
