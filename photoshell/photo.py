@@ -2,7 +2,6 @@ from collections import namedtuple
 from datetime import datetime
 import os
 import shutil
-import subprocess
 
 import wand.image
 import yaml
@@ -114,9 +113,7 @@ class Photo(_Photo):
             )
 
         if not os.path.isfile(developed_path):
-            # TODO: fail gracefully here (or even at startup)
-            blob = subprocess.check_output(
-                ['dcraw', '-c', '-e', self.raw_path])
+            blob = Raw(filename=self.raw_path).fhandle.get_quarter_size_rgb()
 
             with wand.image.Image(blob=blob) as image:
                 with image.convert('jpeg') as developed:
