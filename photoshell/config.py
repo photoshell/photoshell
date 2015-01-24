@@ -18,11 +18,14 @@ class Config(UserDict):
     def load(self):
         if os.path.isfile(self.path):
             with open(self.path, 'r') as config_file:
-                self.update(yaml.load(config_file))
+                try:
+                    self.update(yaml.load(config_file))
+                except:
+                    pass
 
     def flush(self):
         with open(self.path, 'w+') as config_file:
             yaml.dump(self.data, config_file, default_flow_style=False)
 
     def exists(self):
-        os.path.exists(self.path)
+        return os.path.exists(self.path)
