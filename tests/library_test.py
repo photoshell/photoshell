@@ -4,7 +4,6 @@ import pytest
 from photoshell.library import Library
 from photoshell.photo import Photo
 
-
 RAW_FILES = ['foo.CR2', 'bar.CR2', 'baz.CR2']
 
 
@@ -27,33 +26,19 @@ def source_dir(tmpdir):
     return source
 
 
-def create_photo(raw_path, file_hash=None):
-
-    return Photo(
-        None,  # aperture
-        None,  # datetime
-        None,  # developed_path
-        None,  # exposure
-        None,  # flash
-        None,  # focal_length
-        None,  # gps
-        hash(raw_path),  # file_hash
-        None,  # height
-        None,  # iso
-        None,  # lens
-        None,  # make
-        None,  # model
-        None,  # orientation
-        raw_path,  # raw_path
-        None,  # width
-    )
-
-
 def test_add(config, source_dir):
     library = Library(config)
 
-    foo = create_photo(source_dir.join('foo.CR2'))
-    bar = create_photo(source_dir.join('bar.CR2'))
+    foo = Photo.create(
+        raw_path=source_dir.join('foo.CR2'),
+        file_hash='foo',
+        developed_path=None,
+    )
+    bar = Photo.create(
+        raw_path=source_dir.join('bar.CR2'),
+        file_hash='bar',
+        developed_path=None,
+    )
 
     library.add(foo)
 
@@ -64,7 +49,7 @@ def test_add(config, source_dir):
 def test_discover(config, source_dir):
     library = Library(config)
 
-    with mock.patch.object(Photo, 'load', create_photo):
+    with mock.patch('photoshell.library.hash_file', lambda f: f):
         progress, photo_iterator = library.discover(source_dir.strpath)
         photo_list = [photo for photo in photo_iterator()]
 

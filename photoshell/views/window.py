@@ -153,11 +153,11 @@ class Window(Gtk.Window):
         self.update_ui()
 
     def next_photo(self, button=None):
-        self.selection.next()
+        self.selection.next_photo()
         self.render_selection(self.selection)
 
     def prev_photo(self, button=None):
-        self.selection.prev()
+        self.selection.prev_photo()
         self.render_selection(self.selection)
 
     def slideshow_view(self, button):

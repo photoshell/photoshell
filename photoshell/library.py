@@ -1,7 +1,8 @@
 import os
 
-from photoshell.photo import Photo
+import sqlite3 as sqlite
 
+from photoshell.photo import Photo
 from photoshell.selection import Selection
 from photoshell.util import hash_file
 from photoshell.util import Progress
@@ -23,27 +24,42 @@ class Library(object):
             os.makedirs(self.cache_path)
             os.makedirs(os.path.join(self.cache_path, 'jpg'))
             os.makedirs(os.path.join(self.cache_path, 'raw'))
+
+        self.db_path = os.path.join(self.library_path, '.library.db')
+        if not os.path.exists(self.db_path):
+            connection = sqlite.connect(self.db_path)
+            cursor = connection.cursor()
+            cursor.execute(
+                'CREATE TABLE Photos(Hash TEXT, Raw TEXT, Developed TXT)'
+            )
+        else:
+            connection = sqlite.connect(self.db_path)
+            cursor = connection.cursor()
+
         self.sidecars = []
 
-        raw_path = os.path.join(self.cache_path, 'raw')
-        if not os.path.exists(raw_path):
-            os.makedirs(raw_path)
-        for root, _, files in os.walk(raw_path):
-            for file_name in files:
-                file_path = os.path.join(root, file_name)
-                self.sidecars.append(Photo.load(os.path.realpath(file_path)))
+        photo_rows = cursor.execute('SELECT * FROM Photos').fetchall()
+        for file_hash, raw_path, developed_path in photo_rows:
+            self.sidecars.append(Photo.create(
+                raw_path=raw_path,
+                developed_path=developed_path,
+                file_hash=file_hash,
+            ))
+
+        connection.close()
 
     def all(self):
         return self.query(lambda image: True)
 
     def query(self, match):
         selection = Selection(self.library_path, match)
+
         for sidecar in self.sidecars:
             if match(sidecar):
                 selection.append(sidecar)
 
         # TODO: in place mutation is terrible
-        selection.sort(key=lambda image: image.datetime)
+        selection.sort(key=lambda photo: photo.raw_path)
         return selection
 
     def update(self, selection):
@@ -68,10 +84,12 @@ class Library(object):
         file_name, file_ext = os.path.splitext(
             os.path.basename(photo.raw_path))
 
-        import_path = photo.datetime.strftime(self.import_string.format(
-            original_filename=file_name,
-            file_hash=photo.file_hash,
-        )) + file_ext
+        import_path = photo.datetime.strftime(
+            self.import_string.format(
+                original_filename=file_name,
+                file_hash=photo.file_hash,
+            )
+        ) + file_ext
 
         # TODO: directory creation should live elsewhere
         import_dir = os.path.dirname(import_path)
@@ -84,6 +102,9 @@ class Library(object):
                       copy_photos=True, delete_originals=False):
 
         progress, photo_iterator = self.discover(path)
+
+        connection = sqlite.connect(self.db_path)
+        cursor = connection.cursor()
 
         for photo in photo_iterator():
             if notify_callback:
@@ -100,19 +121,22 @@ class Library(object):
                 cache_path=self.cache_path,
             )
 
-            # Add symlink to cache
-            symlink_path = os.path.join(
-                self.cache_path,
-                'raw',
-                photo.file_hash,
+            cursor.execute(
+                'INSERT INTO Photos VALUES("{h}", "{r}", "{d}")'.format(
+                    h=photo.file_hash,
+                    r=photo.raw_path,
+                    d=photo.developed_path,
+                )
             )
-            os.symlink(photo.raw_path, symlink_path)
 
             # Add photo to library
             self.add(photo)
 
             if imported_callback:
                 imported_callback(photo.file_hash, progress.percent())
+
+        connection.commit()
+        connection.close()
 
     def discover(self, path):
         photo_list = raw.discover(path)
@@ -121,7 +145,11 @@ class Library(object):
         def photo_iterator():
             for photo_path in photo_list:
                 progress.advance()
-                photo = Photo.load(photo_path, hash_file(photo_path))
+                photo = Photo.create(
+                    raw_path=photo_path,
+                    developed_path=None,
+                    file_hash=hash_file(photo_path),
+                )
 
                 if not self.exists(photo):
                     yield photo
