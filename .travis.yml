@@ -1,10 +1,7 @@
 language: python
-python:
-  - "3.3"
-  - "3.4"
-before_install:
-  - "sudo apt-get update"
-  - "sudo apt-get install inkscape"
+env:
+  - TOXENV=py33
+  - TOXENV=py34
 install:
   - "pip install ."
   - "pip install -r requirements.txt"
