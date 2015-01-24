@@ -65,7 +65,8 @@ class Photo(_Photo):
 
         # Don't trust the metadata; always use our own path and hash.
         metadata['raw_path'] = photo_path
-        metadata['file_hash'] = file_hash
+        if file_hash:
+            metadata['file_hash'] = file_hash
 
         # TODO: rawphoto doesn't return the data in the same format as the
         # sidecar
