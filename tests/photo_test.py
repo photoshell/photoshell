@@ -5,22 +5,9 @@ from photoshell.photo import Photo
 
 def create_photo(file_hash, raw_path=None):
     return Photo(
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        file_hash,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        raw_path,
-        None,
+        file_hash=file_hash,
+        raw_path=raw_path,
+        developed_path=None,
     )
 
 

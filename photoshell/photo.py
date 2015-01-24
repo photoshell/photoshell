@@ -5,30 +5,15 @@ import shutil
 
 import yaml
 
-from photoshell.util import dict_to_tuple
-from photoshell.util import tuple_to_dict
 from rawphoto.raw import Raw
 
 
 common_formats = ['.PNG', '.JPG', '.JPEG']
 
 _Photo = namedtuple('Photo', [
-    'aperture',
-    'datetime',
-    'developed_path',
-    'exposure',
-    'flash',
-    'focal_length',
-    'gps',
-    'file_hash',
-    'height',
-    'iso',
-    'lens',
-    'make',
-    'model',
-    'orientation',
     'raw_path',
-    'width',
+    'developed_path',
+    'file_hash',
 ])
 
 
@@ -53,20 +38,75 @@ class Photo(_Photo):
         )
 
     @classmethod
-    def load(cls, photo_path, file_hash=None):
-        sidecar_path = photo_path + '.yaml'
+    def create(cls, raw_path, developed_path, file_hash):
+        return cls(
+            raw_path=raw_path,
+            developed_path=developed_path,
+            file_hash=file_hash,
+        )
+
+    @property
+    def aperture(self):
+        return self.metadata['aperture']
+
+    @property
+    def datetime(self):
+        return self.metadata['datetime']
+
+    @property
+    def exposure(self):
+        return self.metadata['exposure']
+
+    @property
+    def flash(self):
+        return self.metadata['flash']
+
+    @property
+    def focal_length(self):
+        return self.metadata['focal_length']
+
+    @property
+    def gps(self):
+        return self.metadata['gps']
+
+    @property
+    def height(self):
+        return self.metadata['height']
+
+    @property
+    def iso(self):
+        return self.metadata['iso']
+
+    @property
+    def lens(self):
+        return self.metadata['lens']
+
+    @property
+    def make(self):
+        return self.metadata['make']
+
+    @property
+    def model(self):
+        return self.metadata['model']
+
+    @property
+    def orientation(self):
+        return self.metadata['orientation']
+
+    @property
+    def width(self):
+        return self.metadata['width']
+
+    @property
+    def metadata(self):
+        sidecar_path = self.raw_path + '.yaml'
 
         if os.path.isfile(sidecar_path):
             with open(sidecar_path, 'r') as sidecar:
                 metadata = yaml.load(sidecar)
         else:
-            with Raw(filename=photo_path) as raw:
+            with Raw(filename=self.raw_path) as raw:
                 metadata = raw.metadata
-
-        # Don't trust the metadata; always use our own path and hash.
-        metadata['raw_path'] = photo_path
-        if file_hash:
-            metadata['file_hash'] = file_hash
 
         # TODO: rawphoto doesn't return the data in the same format as the
         # sidecar
@@ -74,7 +114,7 @@ class Photo(_Photo):
             metadata['datetime'] = datetime.strptime(
                 metadata['datetime'], "%Y:%m:%d %H:%M:%S")
 
-        return dict_to_tuple(Photo, metadata)
+        return metadata
 
     def copy(self, new_path, delete_originals=False):
         # copy photo
@@ -92,12 +132,14 @@ class Photo(_Photo):
             if delete_originals:
                 os.unlink(existing_meta_path)
 
-        photo_dict = tuple_to_dict(self)
-        photo_dict['raw_path'] = new_path
-        return dict_to_tuple(Photo, photo_dict)
+        return Photo.create(
+            raw_path=new_path,
+            developed_path=self.developed_path,
+            file_hash=self.file_hash
+        )
 
     def develop(self, write_sidecar=False, cache_path=None):
-        # develop photow
+        # develop photo
         if os.path.splitext(self.raw_path)[-1].upper() in common_formats:
             developed_path = self.raw_path
         else:
@@ -118,19 +160,26 @@ class Photo(_Photo):
             with open(developed_path, 'wb') as f:
                 f.write(blob)
 
-        photo_dict = tuple_to_dict(self)
-        photo_dict['developed_path'] = developed_path
-        photo = dict_to_tuple(Photo, photo_dict)
+        photo = Photo.create(
+            raw_path=self.raw_path,
+            developed_path=developed_path,
+            file_hash=self.file_hash
+        )
 
         if write_sidecar:
             meta_path = photo.raw_path + '.yaml'
+            # IMPORTANT: until the following TODO about merging metadata is
+            # done, trying to call photo.metadata *after* opening the yaml
+            # file will cause it to read the empty file and write nothing.
+            # To fix this we just cache metadata here before calling open.
+            metadata = photo.metadata
             # TODO: merge existing metadata
             # This is an odd edge case where you're importing from "source" to
             # "destination" and "destination" already has a sidecar for some
             # reason. Sidecars from "source" will be loaded in already.
             with open(meta_path, 'w+') as meta_file:
                 yaml.dump(
-                    tuple_to_dict(photo), meta_file, default_flow_style=False)
+                    metadata, meta_file, default_flow_style=False)
 
         return photo
 

@@ -2,18 +2,6 @@
 import hashlib
 
 
-def tuple_to_dict(t):
-    """Convert a named tuple to a dict"""
-    return dict(zip(t._fields, t))
-
-
-def dict_to_tuple(cls, d):
-    """Convert a dict to a named tuple"""
-    fields = [d.get(field, '') for field in cls._fields]
-    return cls(*fields)
-
-
-# TODO: this shouldn't live on self
 def hash_file(file_path):
     hash = hashlib.sha1()
 

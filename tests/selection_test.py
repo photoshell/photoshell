@@ -22,17 +22,8 @@ def empty_selection():
 
 @pytest.fixture
 def selection(empty_selection):
-    empty_selection.images.append('image')
-    empty_selection.photos.append('image')
+    empty_selection.photos.append('photo')
     return empty_selection
-
-
-def test_current_default_selection(selection):
-    assert selection.current()
-
-
-def test_current_is_none_if_selection_empty(empty_selection):
-    assert empty_selection.current() is None
 
 
 def test_current_photo_default_selection(selection):
@@ -44,15 +35,14 @@ def test_current_photo_is_none_if_selection_empty(empty_selection):
 
 
 def test_next_prev_does_nothing_single_photo(selection):
-    assert selection.current() == selection.next()
-    assert selection.current() == selection.prev()
+    assert selection.current_photo() == selection.next_photo()
+    assert selection.current_photo() == selection.prev_photo()
 
 
 def test_next_prev_wrap_around(selection):
     selection.photos.append('photo2')
-    selection.images.append('image2')
 
-    assert selection.next() == 'image2'
-    assert selection.next() == 'image'
-    assert selection.prev() == 'image2'
-    assert selection.prev() == 'image'
+    assert selection.next_photo() == 'photo2'
+    assert selection.next_photo() == 'photo'
+    assert selection.prev_photo() == 'photo2'
+    assert selection.prev_photo() == 'photo'

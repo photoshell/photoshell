@@ -7,7 +7,6 @@ class Selection(object):
 
         self.library_path = library_path
         self.query = query
-        self.images = []
         self.photos = []
         self.current_image = 0
 
@@ -15,16 +14,7 @@ class Selection(object):
         # hack to prevent image from loading at import time
         # this is because we can't do CI with anything that
         # imports from gi
-        from photoshell.image import Image
-        image = Image(sidecar.developed_path, sidecar.datetime)
-        self.images.append(image)
         self.photos.append(sidecar)
-
-    def current(self):
-        if len(self.images):
-            return self.images[self.current_image]
-        else:
-            return None
 
     def current_photo(self):
         if len(self.photos):
@@ -32,34 +22,21 @@ class Selection(object):
         else:
             return None
 
-    def next(self):
-        l = len(self.images)
+    def next_photo(self):
+        l = len(self.photos)
         if l > 1:
             self.current_image = (self.current_image + 1) % l
-        return self.current()
+        return self.current_photo()
 
-    def prev(self):
-        l = len(self.images)
+    def prev_photo(self):
+        l = len(self.photos)
         if l > 1:
             self.current_image = (self.current_image - 1) % l
-        return self.current()
-
-    def jump(self, image_path):
-        # TODO: there is an idiomatic way to do this
-        for i in range(len(self.images)):
-            if self.images[i].image_path == image_path:
-                self.current_image = i
-                break
-
-        return self.current()
-
-    def each(self):
-        for image in self.images:
-            yield image
+        return self.current_photo()
 
     def each_photo(self):
         for photo in self.photos:
             yield photo
 
     def sort(self, key):
-        self.images = sorted(self.images, key=key)
+        self.photos = sorted(self.photos, key=key)
