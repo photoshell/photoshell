@@ -25,7 +25,3 @@ logo_gnome.png: logo.svg
 logo_xsmall.png: logo.svg
 	$(eval SIZE=16)
 	$(render)
-
-.PHONY: clean
-clean:
-	rm -f *.png

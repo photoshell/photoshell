@@ -25,7 +25,7 @@ test: $(VENV)
 	$(ACTIVATE); tox $(REBUILD_FLAG)
 
 .PHONY: build
-build: pre-commit art
+build: pre-commit
 
 .PHONY: run
 run: build $(VENV)
@@ -36,7 +36,6 @@ clean:
 	find . -iname '*.pyc' | xargs rm -f
 	rm -rf .tox
 	rm -rf $(VENV)
-	$(MAKE) -C art $@
 
 .PHONY: art
 art:
