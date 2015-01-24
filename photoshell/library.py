@@ -21,7 +21,7 @@ class Library(object):
             os.makedirs(self.library_path)
         if not os.path.exists(self.cache_path):
             os.makedirs(self.cache_path)
-            os.makedirs(os.path.join(self.cache_path, 'tiff'))
+            os.makedirs(os.path.join(self.cache_path, 'jpg'))
             os.makedirs(os.path.join(self.cache_path, 'raw'))
         self.sidecars = []
 
@@ -83,8 +83,7 @@ class Library(object):
     def import_photos(self, path, notify_callback=None, imported_callback=None,
                       copy_photos=True, delete_originals=False):
 
-        photo_count, photo_iterator = self.discover(path)
-        progress = Progress(photo_count)
+        progress, photo_iterator = self.discover(path)
 
         for photo in photo_iterator():
             if notify_callback:
@@ -113,20 +112,18 @@ class Library(object):
             self.add(photo)
 
             if imported_callback:
-                imported_callback(photo.file_hash, progress.advance())
+                imported_callback(photo.file_hash, progress.percent())
 
     def discover(self, path):
         photo_list = raw.discover(path)
-        new_list = []
-
-        for photo_path in photo_list:
-            photo = Photo.load(photo_path, hash_file(photo_path))
-
-            if not self.exists(photo):
-                new_list.append(photo)
+        progress = Progress(len(photo_list))
 
         def photo_iterator():
-            for photo in new_list:
-                yield photo
+            for photo_path in photo_list:
+                progress.advance()
+                photo = Photo.load(photo_path, hash_file(photo_path))
 
-        return len(new_list), photo_iterator
+                if not self.exists(photo):
+                    yield photo
+
+        return progress, photo_iterator
