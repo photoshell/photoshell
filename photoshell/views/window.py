@@ -203,7 +203,7 @@ class Window(Gtk.Window):
         PhotoImporter(self).import_photos()
 
     def export_photo(self, button):
-        PhotoExporter(self).export_photo(self.selection.current())
+        PhotoExporter(self).export_photo(self.selection.current_photo())
 
     def on_key_release(self, widget, ev, data=None):
         self.keyReleaseBindings.get(ev.keyval, lambda s, w: None)(self, widget)

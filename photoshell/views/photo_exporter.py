@@ -32,15 +32,16 @@ class PhotoExporter(Gtk.FileChooserDialog):
             filename = None
 
         def write_image(photo, format, filename):
-            with Image(filename=photo.image_path) as image:
+            # TODO: Export the full sized photo, not the preview.
+            with Image(filename=photo.developed_path) as image:
                 image.format = format
                 image.save(filename=filename)
 
         if filename and response == Gtk.ResponseType.OK:
             extension = os.path.splitext(filename)[-1]
-            if extension in ['.PNG', '.png']:
+            if extension.lower() == '.png':
                 write_image(photo, 'png', filename)
-            elif extension in ['.jpg', '.JPG', '.jpeg', '.JPEG']:
+            elif extension.lower() in ['.jpg', '.jpeg']:
                 write_image(photo, 'jpeg', filename)
             else:
                 # TODO: show error here
