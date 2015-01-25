@@ -63,7 +63,7 @@ class Library(object):
         return selection
 
     def update(self, selection):
-        current = selection.current()
+        current = selection.current_photo()
         if current:
             image_path = current.image_path
         new_selection = self.query(selection.query)
