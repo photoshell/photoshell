@@ -11,9 +11,6 @@ class Selection(object):
         self.current_image = 0
 
     def append(self, sidecar):
-        # hack to prevent image from loading at import time
-        # this is because we can't do CI with anything that
-        # imports from gi
         self.photos.append(sidecar)
 
     def current_photo(self):

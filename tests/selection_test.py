@@ -1,17 +1,14 @@
-import os
 import pytest
-import yaml
 
 from photoshell.selection import Selection
 
 
 @pytest.fixture
-def sidecar(tmpdir):
-    tmpdir.join("test.sidecar").write(yaml.dump({
-        'developed_path': os.path.join(tmpdir.strpath, "test.jpeg"),
+def sidecar():
+    return {
+        'developed_path': 'test.jpeg',
         'datetime': '2014-10-10 00:00'
-    }, default_flow_style=False))
-    return os.path.join(tmpdir.strpath, "test.sidecar")
+    }
 
 
 @pytest.fixture
@@ -21,9 +18,14 @@ def empty_selection():
 
 
 @pytest.fixture
-def selection(empty_selection):
-    empty_selection.photos.append('photo')
+def selection(empty_selection, sidecar):
+    empty_selection.append(sidecar)
     return empty_selection
+
+
+def test_append(empty_selection, sidecar):
+    empty_selection.append(sidecar)
+    assert empty_selection.photos[0] == sidecar
 
 
 def test_current_photo_default_selection(selection):
@@ -39,10 +41,12 @@ def test_next_prev_does_nothing_single_photo(selection):
     assert selection.current_photo() == selection.prev_photo()
 
 
-def test_next_prev_wrap_around(selection):
-    selection.photos.append('photo2')
+def test_next_prev_wrap_around(empty_selection, sidecar):
+    sidecar2 = {'datetime': 'datetime'}
+    empty_selection.photos.append(sidecar)
+    empty_selection.photos.append(sidecar2)
 
-    assert selection.next_photo() == 'photo2'
-    assert selection.next_photo() == 'photo'
-    assert selection.prev_photo() == 'photo2'
-    assert selection.prev_photo() == 'photo'
+    assert empty_selection.next_photo() == sidecar2
+    assert empty_selection.next_photo() == sidecar
+    assert empty_selection.prev_photo() == sidecar2
+    assert empty_selection.prev_photo() == sidecar
