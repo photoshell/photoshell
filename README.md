@@ -1,4 +1,5 @@
 [![Build status](https://api.travis-ci.org/photoshell/photoshell.svg?branch=master)](https://travis-ci.org/photoshell/photoshell)
+[![Coverage Status](https://coveralls.io/repos/photoshell/photoshell/badge.svg)](https://coveralls.io/r/photoshell/photoshell)
 
 # photoshell
 
