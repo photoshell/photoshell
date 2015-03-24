@@ -80,7 +80,7 @@ class Window(Gtk.Window):
 
         self.header_bar.pack_start(self.import_button)
 
-        # Create import button
+        # Create export button
         self.export_button = Gtk.Button()
         export_icon = Gio.ThemedIcon(name="document-save-symbolic")
         export_image = Gtk.Image.new_from_gicon(
@@ -89,6 +89,16 @@ class Window(Gtk.Window):
         self.export_button.add(export_image)
 
         self.header_bar.pack_start(self.export_button)
+
+        # Create remove button
+        self.remove_button = Gtk.Button()
+        remove_icon = Gio.ThemedIcon(name="edit-delete-symbolic")
+        remove_image = Gtk.Image.new_from_gicon(
+            remove_icon, Gtk.IconSize.BUTTON)
+        self.remove_button.connect('clicked', self.remove_photo)
+        self.remove_button.add(remove_image)
+
+        self.header_bar.pack_start(self.remove_button)
 
         self.progress = Gtk.ProgressBar()
         self.progress.set_text('Importing...')
@@ -204,6 +214,12 @@ class Window(Gtk.Window):
 
     def export_photo(self, button):
         PhotoExporter(self).export_photo(self.selection.current_photo())
+
+    def remove_photo(self, button):
+        photo = self.selection.current_photo()
+        if len(self.library.sidecars) > 1:
+            self.next_photo()
+        self.library.remove_photo(photo)
 
     def on_key_release(self, widget, ev, data=None):
         self.keyReleaseBindings.get(ev.keyval, lambda s, w: None)(self, widget)
