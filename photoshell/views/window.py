@@ -2,6 +2,7 @@ from gi.repository import Gio
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
+from gi.repository import GLib
 
 from photoshell.views.grid import Grid
 from photoshell.views.photo_exporter import PhotoExporter
@@ -133,7 +134,9 @@ class Window(Gtk.Window):
         self.header_bar.set_custom_title(view_box)
 
         # Setup Window
+        GLib.set_application_name("PhotoShell")
         self.set_wmclass("PhotoShell", "PhotoShell")
+        self.set_title("PhotoShell")
         self.set_titlebar(self.header_bar)
         self.set_position(Gtk.WindowPosition.CENTER)
         self.connect('delete-event', Gtk.main_quit)
