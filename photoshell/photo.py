@@ -17,16 +17,28 @@ _Photo = namedtuple('Photo', [
 ])
 
 
+photo_cache = {}
+
+
 class Photo(_Photo):
 
     # TODO: move this off the class
     def gtk_image(self, base_path, max_width=1280, max_height=1024):
         from photoshell.image import Image
-        return Image(self.developed_path, self.datetime).load_preview(
-            base_path,
-            max_width=max_width,
-            max_height=max_height,
+        photo_key = '{path}|{width}|{height}'.format(
+            path=self.developed_path,
+            width=max_width,
+            height=max_height,
         )
+
+        if not photo_cache.get(photo_key, None):
+            photo_cache[photo_key] = Image(self.developed_path, self.datetime).load_preview(
+                base_path,
+                max_width=max_width,
+                max_height=max_height,
+            )
+
+        return photo_cache[photo_key]
 
     # TODO: move this off the class
     def gtk_pixbuf(self, base_path, max_width=1280, max_height=1024):
