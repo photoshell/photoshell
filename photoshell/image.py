@@ -1,7 +1,6 @@
-import os
-
 from gi.repository import GdkPixbuf
 from gi.repository import Gtk
+
 import wand.image
 
 
@@ -49,4 +48,5 @@ class Image(object):
         return pixbuf
 
     def load_preview(self, base_path, max_width=1280, max_height=1024):
-        return Gtk.Image.new_from_pixbuf(self.load_pixbuf(base_path, max_width, max_height))
+        return Gtk.Image.new_from_pixbuf(self.load_pixbuf(base_path, max_width,
+                                                          max_height))
