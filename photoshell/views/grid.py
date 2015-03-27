@@ -3,6 +3,8 @@ import threading
 from gi.repository import Gtk
 from gi.repository import GLib
 
+from photoshell.gtk.image_cache import GtkImageCache
+
 
 THUMB_WIDTH = 256
 THUMB_HEIGHT = 256
@@ -19,6 +21,7 @@ class Grid(Gtk.ScrolledWindow):
 
     def __init__(self):
         super(Grid, self).__init__()
+        self.image_cache = GtkImageCache()
         self.flowbox = Gtk.FlowBox()
         self.add(self.flowbox)
 
@@ -40,8 +43,9 @@ class Grid(Gtk.ScrolledWindow):
 
         def load_thumbnails():
             for photo_box in photo_boxes:
-                gtk_image = photo_box.photo.gtk_image(
+                gtk_image = self.image_cache.gtk_image(
                     selection.library_path,
+                    photo_box.photo,
                     THUMB_WIDTH,
                     THUMB_HEIGHT,
                 )
