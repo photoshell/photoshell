@@ -80,6 +80,9 @@ class Library(object):
     def add(self, photo):
         self.sidecars.append(photo)
 
+    def remove(self, photo):
+        self.sidecars.remove(photo)
+
     def import_path(self, photo):
         file_name, file_ext = os.path.splitext(
             os.path.basename(photo.raw_path))
@@ -97,6 +100,21 @@ class Library(object):
             os.makedirs(import_dir)
 
         return import_path
+
+    def remove_photo(self, photo):
+        connection = sqlite.connect(self.db_path)
+        cursor = connection.cursor()
+
+        cursor.execute(
+            'DELETE FROM Photos WHERE Hash="{h}"'.format(
+                h=photo.file_hash
+            )
+        )
+
+        self.remove(photo)
+
+        connection.commit()
+        connection.close()
 
     def import_photos(self, path, notify_callback=None, imported_callback=None,
                       copy_photos=True, delete_originals=False):
