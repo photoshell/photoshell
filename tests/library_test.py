@@ -1,4 +1,5 @@
 import mock
+import os
 import pytest
 
 from photoshell.library import Library
@@ -24,6 +25,13 @@ def source_dir(tmpdir):
         source.join(f).ensure(file=True)
 
     return source
+
+
+def test_library_creates_dir(config):
+    config['library'] = os.path.join(config['library'], 'doesntexistyet')
+    Library(config)
+
+    assert(os.path.exists(config['library']))
 
 
 def test_add(config, source_dir):
