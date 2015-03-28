@@ -1,6 +1,5 @@
 import os
-
-from gi.repository import GObject
+import signal
 
 from photoshell.config import Config
 from photoshell.library import Library
@@ -15,6 +14,9 @@ c = Config({
 
 # Open photo viewer
 library = Library(c)
+
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 Window(c, library, Slideshow())
+
 if c.exists():
     c.flush()
