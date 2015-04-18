@@ -4,8 +4,8 @@ import sqlite3 as sqlite
 
 from photoshell.photo import Photo
 from photoshell.selection import Selection
-from photoshell.util import hash_file
-from photoshell.util import Progress
+from photoshell.hash import hash_file
+from photoshell.progress import Progress
 from rawphoto import raw
 
 
