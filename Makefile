@@ -31,6 +31,10 @@ build: pre-commit
 run: build $(VENV)
 	$(ACTIVATE); python -m photoshell
 
+.PHONY: debug
+debug: build $(VENV)
+	GTK_DEBUG=interactive $(ACTIVATE); python -m photoshell
+
 .PHONY: clean
 clean:
 	find . -iname '*.pyc' | xargs rm -f
