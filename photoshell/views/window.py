@@ -158,9 +158,6 @@ class Window(Gtk.Window):
 
         self.update_ui()
 
-        # Start the GTK loop
-        Gtk.main()
-
     def render_selection(self, selection):
         self.selection = selection
         self.update_ui()
