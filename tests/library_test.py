@@ -1,4 +1,3 @@
-import mock
 import os
 import pytest
 
@@ -52,24 +51,3 @@ def test_add(config, source_dir):
 
     assert library.exists(foo)
     assert not library.exists(bar)
-
-
-def test_discover(config, source_dir):
-    library = Library(config)
-
-    with mock.patch('photoshell.library.hash_file', lambda f: f):
-        progress, photo_iterator = library.discover(source_dir.strpath)
-        photo_list = [photo for photo in photo_iterator()]
-
-        # Make sure all the RAW files are accounted for.
-        for raw_file in RAW_FILES:
-            raw_path = source_dir.join(raw_file)
-            assert raw_path in [p.raw_path for p in photo_list]
-
-        # Add one of them to the library...
-        library.add(photo_list[0])
-
-        # And make sure the added file isn't discovered a second time.
-        progress, photo_iterator = library.discover(source_dir.strpath)
-        assert len([p for p in photo_iterator()]) == 2
-        assert [photo for photo in photo_iterator()] == photo_list[1:]
