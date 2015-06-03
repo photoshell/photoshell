@@ -5,6 +5,8 @@
 
 A GTK3 application for managing photos.
 
+![](http://i.imgur.com/u8Bg7ZY.png)
+
 ## Usage
 
 Before running `photoshell`, you will need to have a working Python 3.4
