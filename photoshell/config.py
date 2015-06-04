@@ -9,7 +9,7 @@ class Config(UserDict):
 
     def __init__(self,
                  initialdata={},
-                 path=os.path.join(os.environ['HOME'], '.photoshell.yaml')):
+                 path=os.path.join(os.environ.get('HOME', '.'), '.photoshell.yaml')):
         super(Config, self).__init__(initialdata)
 
         self.path = path
