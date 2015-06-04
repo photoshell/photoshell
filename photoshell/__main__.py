@@ -22,7 +22,7 @@ def setup(ui=UI.cli):
       ui (UI enum) — Use the GUI or the CLI
     """
     c = Config({
-        'library': os.path.join(os.environ['HOME'], 'Pictures/Photoshell'),
+        'library': os.path.join(os.environ.get('HOME', '.'), 'Pictures/Photoshell'),
         'dark_theme': True,
         'import_path': '%Y-%m-%d/{original_filename}'
     })
