@@ -53,7 +53,7 @@ class Library(object):
         return self.query(lambda image: True)
 
     def query(self, match):
-        selection = Selection(self.library_path, match)
+        selection = Selection(match)
 
         for sidecar in self.sidecars:
             if match(sidecar):
@@ -88,7 +88,8 @@ class Library(object):
         file_name, file_ext = os.path.splitext(
             os.path.basename(photo.raw_path))
 
-        import_path = datetime.fromtimestamp(photo.metadata.timestamp).strftime(
+        timestamp = photo.metadata.timestamp
+        import_path = datetime.fromtimestamp(timestamp).strftime(
             self.import_string.format(
                 original_filename=file_name,
                 file_hash=photo.file_hash,
@@ -135,10 +136,7 @@ class Library(object):
                     self.import_path(photo), delete_originals=delete_originals)
 
             # Develop the photo
-            photo = photo.develop(
-                write_sidecar=False,
-                cache_path=self.cache_path,
-            )
+            photo = photo.develop(cache_path=self.cache_path)
 
             cursor.execute(
                 'INSERT INTO Photos VALUES("{h}", "{r}", "{d}")'.format(

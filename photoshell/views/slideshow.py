@@ -24,10 +24,7 @@ class Slideshow(Gtk.Box):
             # TODO: image path is bad criteria for redrawing if we re-develop
             if self.image_path != new_photo.raw_path:
                 self.remove(self.image)
-                self.image = self.image_cache.gtk_image(
-                    selection.library_path,
-                    new_photo,
-                )
+                self.image = self.image_cache.gtk_image(new_photo)
                 self.pack_start(self.image, True, True, 0)
                 self.image_path = new_photo.raw_path
 
