@@ -2,8 +2,6 @@ from collections import namedtuple
 import os
 import shutil
 
-import yaml
-
 from rawkit.raw import Raw
 
 
@@ -53,7 +51,7 @@ class Photo(_Photo):
             file_hash=self.file_hash
         )
 
-    def develop(self, write_sidecar=False, cache_path=None):
+    def develop(self, cache_path=None):
         # develop photo
         developed_name = '{file_hash}.{extension}'.format(
             file_hash=self.file_hash,
@@ -76,21 +74,6 @@ class Photo(_Photo):
             developed_path=developed_path,
             file_hash=self.file_hash
         )
-
-        if write_sidecar:
-            meta_path = photo.raw_path + '.yaml'
-            # IMPORTANT: until the following TODO about merging metadata is
-            # done, trying to call photo.metadata *after* opening the yaml
-            # file will cause it to read the empty file and write nothing.
-            # To fix this we just cache metadata here before calling open.
-            metadata = photo.metadata
-            # TODO: merge existing metadata
-            # This is an odd edge case where you're importing from "source" to
-            # "destination" and "destination" already has a sidecar for some
-            # reason. Sidecars from "source" will be loaded in already.
-            with open(meta_path, 'w+') as meta_file:
-                yaml.dump(
-                    metadata, meta_file, default_flow_style=False)
 
         return photo
 

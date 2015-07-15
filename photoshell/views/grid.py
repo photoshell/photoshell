@@ -44,7 +44,6 @@ class Grid(Gtk.ScrolledWindow):
         def load_thumbnails():
             for photo_box in photo_boxes:
                 gtk_image = self.image_cache.gtk_image(
-                    selection.library_path,
                     photo_box.photo,
                     THUMB_WIDTH,
                     THUMB_HEIGHT,

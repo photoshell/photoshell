@@ -7,7 +7,7 @@ class GtkImageCache(object):
         super(GtkImageCache, self).__init__()
         self.cache = {}
 
-    def gtk_image(self, base_path, photo, max_width=1280, max_height=1024):
+    def gtk_image(self, photo, max_width=1280, max_height=1024):
         from photoshell.image import Image
         photo_key = '{path}|{width}|{height}'.format(
             path=photo.developed_path,
@@ -20,7 +20,6 @@ class GtkImageCache(object):
                 photo.developed_path,
                 datetime.fromtimestamp(photo.metadata.timestamp),
             ).load_preview(
-                base_path,
                 max_width=max_width,
                 max_height=max_height,
             )

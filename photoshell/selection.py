@@ -2,10 +2,9 @@
 
 class Selection(object):
 
-    def __init__(self, library_path, query):
+    def __init__(self, query):
         super(Selection, self).__init__()
 
-        self.library_path = library_path
         self.query = query
         self.photos = []
         self.current_image = 0

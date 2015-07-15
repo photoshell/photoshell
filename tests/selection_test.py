@@ -13,7 +13,7 @@ def sidecar():
 
 @pytest.fixture
 def selection():
-    s = Selection('', '')
+    s = Selection('')
     return s
 
 

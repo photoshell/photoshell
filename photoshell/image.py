@@ -25,7 +25,7 @@ class Image(object):
 
         return self._height
 
-    def load_pixbuf(self, base_path, max_width=1280, max_height=1024):
+    def load_pixbuf(self, max_width=1280, max_height=1024):
         loader = GdkPixbuf.PixbufLoader.new()
         loader.write(open(self.image_path, 'rb').read())
         loader.close()
@@ -47,6 +47,7 @@ class Image(object):
 
         return pixbuf
 
-    def load_preview(self, base_path, max_width=1280, max_height=1024):
-        return Gtk.Image.new_from_pixbuf(self.load_pixbuf(base_path, max_width,
-                                                          max_height))
+    def load_preview(self, max_width=1280, max_height=1024):
+        return Gtk.Image.new_from_pixbuf(
+            self.load_pixbuf(max_width, max_height)
+        )
