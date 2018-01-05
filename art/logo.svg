@@ -13,9 +13,9 @@
    height="512"
    id="svg2985"
    version="1.1"
-   inkscape:version="0.48.5 r10040"
+   inkscape:version="0.92.2 5c3e80d, 2017-08-06"
    sodipodi:docname="logo.svg"
-   inkscape:export-filename="logo.png"
+   inkscape:export-filename="photoshell.png"
    inkscape:export-xdpi="107.57812"
    inkscape:export-ydpi="107.57812">
   <title
@@ -164,17 +164,17 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4142136"
-     inkscape:cx="145.00118"
-     inkscape:cy="284.81243"
+     inkscape:cx="227.56255"
+     inkscape:cy="214.1511"
      inkscape:current-layer="layer3"
      showgrid="true"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
-     inkscape:window-width="1920"
-     inkscape:window-height="1017"
-     inkscape:window-x="0"
-     inkscape:window-y="41"
-     inkscape:window-maximized="1" />
+     inkscape:window-width="954"
+     inkscape:window-height="998"
+     inkscape:window-x="960"
+     inkscape:window-y="54"
+     inkscape:window-maximized="0" />
   <metadata
      id="metadata2990">
     <rdf:RDF>
@@ -228,15 +228,15 @@
        inkscape:groupmode="layer"
        id="layer6"
        inkscape:label="Background"
-       sodipodi:insensitive="true"
-       style="display:inline">
+       style="display:inline"
+       sodipodi:insensitive="true">
       <rect
-         style="fill:#eeeeec;fill-opacity:1;stroke:#32322c;stroke-opacity:1;filter:url(#filter3905-9)"
+         style="fill:#eeeeec;fill-opacity:1;stroke:#32322c;stroke-width:0.77645832;stroke-opacity:1"
          id="rect3059"
-         width="384"
-         height="512"
-         x="64"
-         y="-448.79999" />
+         width="314.22354"
+         height="377.22354"
+         x="102.7791"
+         y="-363.40921" />
     </g>
     <g
        inkscape:groupmode="layer"
@@ -246,7 +246,7 @@
        sodipodi:insensitive="true">
       <path
          style="fill:#f2f2f0;fill-opacity:0.87058824;stroke:none"
-         d="m 64.997726,-447.00226 382.004544,0 C 280.24456,-149.94232 298.62899,-78.419063 64.997726,63.002289 z"
+         d="m 103.59553,-362.08473 312.59067,0 C 279.72996,-143.22144 294.77376,-90.525626 103.59553,13.668636 Z"
          id="rect3059-9-7"
          inkscape:connector-curvature="0"
          sodipodi:nodetypes="cccc" />
@@ -255,34 +255,35 @@
        inkscape:groupmode="layer"
        id="layer4"
        inkscape:label="InnerOutline"
-       sodipodi:insensitive="true"
-       style="display:inline">
+       style="display:inline"
+       sodipodi:insensitive="true">
       <rect
-         style="fill:none;stroke:#fafafa;stroke-width:0.99545282;stroke-opacity:1"
+         style="fill:none;stroke:#fafafa;stroke-width:0.77292764;stroke-opacity:1"
          id="rect3059-9"
-         width="382.00455"
-         height="510.00455"
-         x="64.997726"
-         y="-447.00226" />
+         width="312.59067"
+         height="375.75339"
+         x="103.59553"
+         y="-362.08472" />
     </g>
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer3"
-     inkscape:label="Shell">
+     inkscape:label="Shell"
+     style="display:inline"
+     sodipodi:insensitive="true">
     <rect
-       transform="translate(0,448)"
-       style="fill:#555753;fill-opacity:1;stroke:#555753;stroke-opacity:1"
+       style="fill:#555753;fill-opacity:1;stroke:#555753;stroke-width:0.90591937;stroke-opacity:1"
        id="rect3966"
-       width="334"
-       height="282.13562"
-       x="89"
-       y="-423.13562" />
+       width="278.09409"
+       height="278.09409"
+       x="120.84383"
+       y="102.68295" />
     <flowRoot
        xml:space="preserve"
        id="flowRoot4078"
-       style="font-size:144px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:-30px;fill:#d3d7cf;fill-opacity:1;stroke:none;font-family:Ostrich Sans Inline;-inkscape-font-specification:Ostrich Sans Inline"
-       transform="translate(12.020816,53.740113)"><flowRegion
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0.01%;font-family:'Ostrich Sans Inline';-inkscape-font-specification:'Ostrich Sans Inline';letter-spacing:0px;word-spacing:-30px;fill:#d3d7cf;fill-opacity:1;stroke:none"
+       transform="matrix(0.81818182,0,0,0.81818182,70.171035,127.10606)"><flowRegion
          id="flowRegion4080"><rect
            id="rect4082"
            width="318.90515"
@@ -291,7 +292,7 @@
            y="38.238457"
            style="letter-spacing:0px;word-spacing:-30px;fill:#d3d7cf;fill-opacity:1" /></flowRegion><flowPara
          id="flowPara4084"
-         style="font-size:72px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:0px;word-spacing:-30px;fill:#d3d7cf;fill-opacity:1;font-family:Monospace;-inkscape-font-specification:Monospace">&gt; ph.sh</flowPara></flowRoot>  </g>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:72px;line-height:1.25;font-family:monospace;-inkscape-font-specification:Monospace;letter-spacing:0px;word-spacing:-30px;fill:#d3d7cf;fill-opacity:1">&gt; ph.sh</flowPara></flowRoot>  </g>
   <g
      inkscape:groupmode="layer"
      id="layer2"
@@ -300,7 +301,7 @@
      sodipodi:insensitive="true">
     <g
        id="g3976"
-       transform="translate(89.802558,-144.95689)">
+       transform="matrix(0.81829047,0,0,0.73676474,123.8171,47.162557)">
       <g
          transform="translate(-66.449743,-48.790368)"
          id="g3987">
@@ -341,4 +342,33 @@
       </g>
     </g>
   </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer5"
+     inkscape:label="Signature"
+     sodipodi:insensitive="true">
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4186"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0.01%;font-family:'Ostrich Sans Inline';-inkscape-font-specification:'Ostrich Sans Inline';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"><flowRegion
+         id="flowRegion4188"><rect
+           id="rect4190"
+           width="294.1564"
+           height="181.72644"
+           x="-120.20815"
+           y="234.81415" /></flowRegion><flowPara
+         id="flowPara4192"
+         style="font-size:144px;line-height:1.25">Photoshell</flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4188"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0.01%;font-family:'Ostrich Sans Inline';-inkscape-font-specification:'Ostrich Sans Inline';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       transform="matrix(0.84100039,-0.14829106,0.14829106,0.84100039,-39.63258,125.85422)"><flowRegion
+         id="flowRegion4190"><rect
+           id="rect4192"
+           width="252.4371"
+           height="66.468033"
+           x="241.12341"
+           y="391.08475" /></flowRegion><flowPara
+         id="flowPara4194"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:30px;line-height:1.25;font-family:'League Script Thin';-inkscape-font-specification:'League Script Thin, '">photoshell</flowPara></flowRoot>  </g>
 </svg>
